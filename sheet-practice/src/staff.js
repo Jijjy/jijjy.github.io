@@ -68,8 +68,8 @@ export function pitchToY(midi, height, spelling = 'sharp') {
 
 // One diatonic step = spacing/2 (a staff line spans 2 diatonic steps). A note
 // must be at most that tall or stepwise pitches overlap vertically. Use a hair
-// under so even adjacent steps keep a gap. Accidentals are half this (top half
-// = sharp, bottom half = flat).
+// under so even adjacent steps keep a gap. Accidentals are half this tall and
+// centred a half-step (sp/4) off the natural — sharp above, flat below.
 export function noteHeight(height) { return spacing(height) * 0.46; }
 
 // Hand split for fallback colouring / fingering when source has no part info.

@@ -53,7 +53,7 @@ function prepareWindow() {
   // diatonic/accidental for everything visible/near; fingering on a window
   const lo = state.now - 4, hi = state.now + state.visualSeconds + 4;
   for (const n of state.notes) {
-    if (n.diatonic === undefined || !n.fixedSpelling) computeSpelling(n);
+    if (n.diatonic === undefined) computeSpelling(n);   // toggle handler re-spells on change
     if (n.hand == null) n.hand = defaultHand(n.midi);
   }
   const win = state.notes.filter((n) => n.start + n.dur >= lo && n.start <= hi);
@@ -82,14 +82,24 @@ function rebuildEvents() {
 
 // ---------- sources ----------
 
+// Tempo slider is absolute BPM. tempoScale = targetBpm / sourceBpm.
+function setTempoBpm(bpm) {
+  const rng = $('rng-tempo');
+  const v = Math.max(+rng.min, Math.min(+rng.max, Math.round(bpm)));
+  rng.value = v;
+  state.tempoScale = v / state.bpm;
+  $('lbl-tempo').textContent = `${v} BPM`;
+}
+
 function startProcedural() {
   state.source = 'procedural';
   state.proc = new ProceduralSource({ seed: (Math.floor(performance.now()) % 100000) + 1, bpm: 82 });
   state.bpm = 82;
+  setTempoBpm(state.bpm);
   resetTransport();
   state.allNotes = [];
   state.parts = [{ id: 'R', name: 'Right hand (melody)', count: 0, default: true },
-                 { id: 'L', name: 'Left hand (bass)', count: 0, default: true }];
+  { id: 'L', name: 'Left hand (bass)', count: 0, default: true }];
   state.selectedParts = new Set(['R', 'L']);
   renderParts();
   pumpProcedural();
@@ -101,9 +111,12 @@ function pumpProcedural() {
   state.proc.ensureUntil(state.now + state.visualSeconds + 6);
   // hand on proc notes is already R/L; filter by selected parts
   state.notes = state.proc.notes.filter((n) => state.selectedParts.has(n.hand));
+  // Solve spelling/fingering every frame so the window tracks `now`; the proc
+  // source appends notes in batches, so gating this on a count change lets
+  // playback outrun the last solve and notes scroll in unfingered (yellow).
+  prepareWindow();
   if (state.notes.length !== state.lastCount) {
     state.lastCount = state.notes.length;
-    prepareWindow();
     rebuildEvents();
   }
 }
@@ -121,6 +134,7 @@ async function loadFile(file) {
   for (const n of state.allNotes) if (n.diatonic !== undefined) n.fixedSpelling = true;
   state.parts = data.parts;
   state.bpm = data.bpm || 120;
+  setTempoBpm(state.bpm);
   state.selectedParts = new Set(state.parts.filter((p) => p.default).map((p) => p.id));
   renderParts();
   applyFilter();
@@ -218,6 +232,7 @@ function draw() {
     expected: state.waiting ? state.expected : null,
     correct: state.correct,
   });
+  updateLegend();
 }
 
 let lastT = performance.now();
@@ -254,7 +269,7 @@ async function enableAudio() {
     await initAudio();
     state.audioOn = true;
     $('btn-audio').classList.add('on');
-    $('btn-audio').textContent = '🔊 Audio on';
+    $('btn-audio').textContent = '🔊';
     setStatus('Audio ready.');
   } catch (e) {
     setStatus('Audio failed: ' + e.message);
@@ -272,28 +287,44 @@ async function enableMidi() {
   }
 }
 
+let fingerSwatches = [];
+
+// Light up the legend swatch for each finger that has a note sounding right now.
+function updateLegend() {
+  if (!fingerSwatches.length) return;
+  const on = [false, false, false, false, false];
+  for (const n of state.notes) {
+    if (n.start <= state.now && state.now < n.start + n.dur) {
+      on[Math.max(1, Math.min(5, n.finger || 3)) - 1] = true;
+    }
+  }
+  fingerSwatches.forEach((sw, i) => sw.classList.toggle('on', on[i]));
+}
+
 function buildLegend() {
   const el = $('legend');
   if (!el) return;
   el.innerHTML = '';
 
-  // colour = finger (1..5), shared by both hands
+  // colour = finger (1..5), shared by both hands. Each swatch dims to 0.5 unless
+  // a note for that finger is currently being played (see updateLegend()).
   const colours = document.createElement('div');
   colours.className = 'legend-row';
-  FINGER.forEach((c, i) => {
+  fingerSwatches = FINGER.map((c, i) => {
     const sw = document.createElement('span');
     sw.className = 'legend-sw';
     sw.style.background = c;
     sw.textContent = i + 1;
     sw.title = `Finger ${i + 1}`;
     colours.appendChild(sw);
+    return sw;
   });
   el.appendChild(colours);
 
-  // shape = hand (bevelled right corner)
+  // shape = hand (bevelled left corner)
   const hands = document.createElement('div');
   hands.className = 'legend-row';
-  for (const [name, cls] of [['Right', 'bev-tr'], ['Left', 'bev-br']]) {
+  for (const [name, cls] of [['Right', 'bev-tl'], ['Left', 'bev-bl']]) {
     const item = document.createElement('span');
     item.className = 'legend-hand';
     const chip = document.createElement('span');
@@ -310,12 +341,12 @@ function wireUI() {
 
   $('btn-play').addEventListener('click', () => {
     state.playing = !state.playing;
-    $('btn-play').textContent = state.playing ? '⏸ Pause' : '▶ Play';
+    $('btn-play').textContent = state.playing ? '⏸' : '▶';
     if (state.playing && state.audioOn && !isReady()) enableAudio();
   });
-  $('btn-stop').addEventListener('click', () => { resetTransport(); state.playing = false; $('btn-play').textContent = '▶ Play'; if (state.source === 'procedural') pumpProcedural(); else applyFilter(); });
+  $('btn-stop').addEventListener('click', () => { resetTransport(); state.playing = false; $('btn-play').textContent = '▶'; if (state.source === 'procedural') pumpProcedural(); else applyFilter(); });
 
-  $('btn-audio').addEventListener('click', () => { if (!state.audioOn) enableAudio(); else { state.audioOn = false; $('btn-audio').classList.remove('on'); $('btn-audio').textContent = '🔇 Audio'; } });
+  $('btn-audio').addEventListener('click', () => { if (!state.audioOn) enableAudio(); else { state.audioOn = false; $('btn-audio').classList.remove('on'); $('btn-audio').textContent = '🔇'; } });
   $('btn-midi').addEventListener('click', enableMidi);
 
   $('chk-practice').addEventListener('change', (e) => {
@@ -327,9 +358,20 @@ function wireUI() {
 
   $('sel-spell').addEventListener('change', (e) => { state.spelling = e.target.value; for (const n of state.notes) computeSpelling(n); });
 
-  $('rng-tempo').addEventListener('input', (e) => { state.tempoScale = parseFloat(e.target.value); $('lbl-tempo').textContent = `${Math.round(state.tempoScale * 100)}%`; });
+  $('rng-tempo').addEventListener('input', (e) => setTempoBpm(parseFloat(e.target.value)));
   $('rng-speed').addEventListener('input', (e) => { state.visualSeconds = parseFloat(e.target.value); $('lbl-speed').textContent = `${state.visualSeconds.toFixed(1)}s`; });
-  $('rng-vol').addEventListener('input', (e) => { setVolume(parseFloat(e.target.value)); });
+  $('rng-vol').addEventListener('input', (e) => {
+    const el = e.target, db = parseFloat(el.value);
+    setVolume(db);
+    $('lbl-vol').textContent = `${Math.round((db - +el.min) / (+el.max - +el.min) * 100)}%`;
+  });
+}
+
+// keep the side panel clear of the top bar even when the bar wraps to 2 rows
+function syncPanelTop() {
+  const set = () => $('panel').style.top = ($('bar').offsetHeight + 12) + 'px';
+  set();
+  new ResizeObserver(set).observe($('bar'));
 }
 
 // ---------- boot ----------
@@ -349,11 +391,12 @@ async function boot() {
   if (!midiInput.supported) $('btn-midi').disabled = true, $('btn-midi').textContent = '🎹 No Web MIDI';
 
   wireUI();
+  syncPanelTop();
   buildLegend();
   startProcedural();
   requestAnimationFrame(loop);
 
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => { });
 }
 
 boot();

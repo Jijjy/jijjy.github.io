@@ -1,44 +1,249 @@
-* { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #05070b;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #e6edf3; }
+* {
+  box-sizing: border-box;
+}
 
-#gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; }
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #05070b;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #f2f6fa;
+}
 
-#bar { position: fixed; top: 0; left: 0; right: 0; z-index: 3;
-  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
-  padding: 8px 12px; background: rgba(8, 11, 18, 0.72); backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255,255,255,0.08); }
+#gl {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;
+}
 
-.group { display: flex; gap: 6px; align-items: center; }
-.group.sliders { gap: 14px; margin-left: auto; flex-wrap: wrap; }
-.sliders label { display: flex; flex-direction: column; font-size: 11px; color: #9fb0c0; gap: 2px; }
-.sliders input[type=range] { width: 110px; }
+/* ---------- top bar: flat, bold, roomy ---------- */
+#bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  align-items: center;
+  padding: 3px;
+  background: #0b1119;
+  border-bottom: 2px solid #1c2838;
+}
 
-button, .filebtn, select { font: inherit; font-size: 13px; color: #e6edf3;
-  background: #18212e; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
-  padding: 6px 10px; cursor: pointer; }
-button:hover, .filebtn:hover { background: #22303f; }
-button.on { background: #1d4ed8; border-color: #3b82f6; }
-button:disabled { opacity: .5; cursor: not-allowed; }
-.chk { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
 
-#panel { position: fixed; top: 64px; left: 12px; z-index: 3; max-width: 260px;
-  background: rgba(8, 11, 18, 0.72); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; }
-#panel h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: #9fb0c0; }
-#parts label { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
-.muted { color: #6b7c8c; }
+.group.sliders {
+  gap: 26px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
 
-#panel h3:not(:first-child) { margin-top: 12px; }
-#legend { font-size: 12px; }
-.legend-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; flex-wrap: wrap; }
-.legend-sw { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.18);
-  display: flex; align-items: center; justify-content: center; font-size: 10px; color: #05070b; font-weight: 700; }
-.legend-hand { display: flex; align-items: center; gap: 5px; color: #9fb0c0; margin-right: 10px; }
-.legend-chip { width: 16px; height: 16px; background: #c2ccd6; display: inline-block; }
-.legend-chip.bev-tr { clip-path: polygon(0 0, 55% 0, 100% 45%, 100% 100%, 0 100%); }
-.legend-chip.bev-br { clip-path: polygon(0 0, 100% 0, 100% 55%, 55% 100%, 0 100%); }
+.sliders label {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  font-weight: 600;
+  color: #aebcca;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
 
-#status { position: fixed; bottom: 0; left: 0; right: 0; z-index: 3;
-  padding: 5px 12px; font-size: 12px; color: #9fb0c0;
-  background: rgba(8, 11, 18, 0.6); border-top: 1px solid rgba(255,255,255,0.06); }
+.sliders label span {
+  color: #f2f6fa;
+  font-weight: 700;
+}
+
+/* ---------- controls: large flat tiles ---------- */
+button,
+.filebtn,
+select {
+  font: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  color: #f2f6fa;
+  background: #1a2737;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+button:hover,
+.filebtn:hover,
+select:hover {
+  background: #25384c;
+}
+
+button:active,
+.filebtn:active {
+  background: #2e455d;
+}
+
+button.on {
+  background: #2563eb;
+  color: #fff;
+}
+
+button.on:hover {
+  background: #2f6df0;
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 600;
+  background: #1a2737;
+  border-radius: 6px;
+  padding: 14px 20px;
+  cursor: pointer;
+}
+
+.chk input {
+  width: 24px;
+  height: 24px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+/* big, grabbable sliders */
+.sliders input[type=range] {
+  width: 170px;
+  height: 8px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+/* ---------- side panel: flat card ---------- */
+#panel {
+  position: fixed;
+  top: 96px;
+  left: 22px;
+  z-index: 3;
+  max-width: 320px;
+  /* top is overwritten by syncPanelTop() to track the real bar height */
+  background: #0b1119;
+  border: 2px solid #1c2838;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+#panel h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #6f93f0;
+}
+
+#panel h3:not(:first-child) {
+  margin-top: 22px;
+}
+
+#parts label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 18px;
+}
+
+#parts input {
+  width: 22px;
+  height: 22px;
+  accent-color: #2563eb;
+}
+
+.muted {
+  color: #6b7c8c;
+}
+
+/* ---------- legend ---------- */
+#legend {
+  font-size: 16px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  flex-wrap: wrap;
+}
+
+.legend-sw {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #05070b;
+  font-weight: 800;
+  opacity: .5;
+  transition: opacity .08s;
+}
+
+.legend-sw.on {
+  opacity: 1;
+}
+
+.legend-hand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #aebcca;
+  margin-right: 14px;
+  font-weight: 600;
+}
+
+.legend-chip {
+  width: 26px;
+  height: 26px;
+  background: #c2ccd6;
+  display: inline-block;
+}
+
+.legend-chip.bev-tl {
+  clip-path: polygon(45% 0, 100% 0, 100% 100%, 0 100%, 0 45%);
+}
+
+.legend-chip.bev-bl {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 45% 100%, 0 55%);
+}
+
+/* ---------- status bar ---------- */
+#status {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 12px 22px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #aebcca;
+  background: #0b1119;
+  border-top: 2px solid #1c2838;
+}

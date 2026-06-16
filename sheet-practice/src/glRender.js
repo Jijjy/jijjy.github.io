@@ -7,13 +7,13 @@
 import { diatonicToY, diatonicToK, noteHeight, spacing, spell } from './staff.js';
 
 // finger -> rgb; index 1..5. Same colour for both hands — hand is shown by the
-// slope of the right edge (RH = top corner pulled left, LH = bottom), not colour.
+// slope of the left edge (RH = top corner pulled right, LH = bottom), not colour.
 export const FINGER = ['#ff5252', '#ff9800', '#ffd600', '#69f0ae', '#40c4ff'];
 const hex = (h) => [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255];
 const FINGER_RGB = FINGER.map(hex);
 const fingerRGB = (f) => FINGER_RGB[Math.max(1, Math.min(5, f || 3)) - 1];
 
-const FLOATS_PER_INSTANCE = 10;  // rect(4) + color(4) + slope(2: top-right, bottom-right x-pull px)
+const FLOATS_PER_INSTANCE = 10;  // rect(4) + color(4) + slope(2: top-left, bottom-left x-pull px)
 const MAX_INSTANCES = 8192;
 
 export class GLRenderer {
@@ -37,8 +37,8 @@ export class GLRenderer {
     this.uBgRes = gl.getUniformLocation(this.bgProg, 'resolution');
     this.uQuadRes = gl.getUniformLocation(this.quadProg, 'resolution');
 
-    // unit quad (triangle strip). A per-instance slope pulls the right corners
-    // left in the shader (top corner for RH, bottom for LH) so the right edge
+    // unit quad (triangle strip). A per-instance slope pulls the left corners
+    // right in the shader (top corner for RH, bottom for LH) so the left edge
     // becomes a diagonal; slope=0 leaves a plain rectangle.
     this.vao = gl.createVertexArray();
     gl.bindVertexArray(this.vao);
@@ -130,8 +130,8 @@ export class GLRenderer {
       const wpx = Math.max(5, note.dur * s.pxPerSec - 2);
       const dia = note.diatonic ?? spell(note.midi, sk).diatonic;
       const yc = diatonicToY(dia, h);
-      const past = note.start + note.dur < s.now;
-      const a = past ? 0.4 : 1;
+      // translucent while approaching; opaque once the onset edge hits the playhead
+      const a = note.start <= s.now ? 1 : 0.4;
 
       // ledger lines through on/above/below-staff notes (drawn first, under the quad)
       const k = diatonicToK(dia);
@@ -140,11 +140,14 @@ export class GLRenderer {
       else if (k < 9) for (let kk = 8; kk >= Math.ceil(k); kk--) drawLedger(kk);
       if (Math.round(k) === 14) drawLedger(14);
 
+      // A sharp/flat sits a half-step off its natural: its centre lands midway
+      // between the two natural diatonic centres (a diatonic step = sp/2, so the
+      // half-step offset is sp/4). Sharp raises (smaller y), flat lowers.
       let top, height;
-      if (note.accidental === 'sharp') { top = yc - nh / 2; height = nh / 2; }
-      else if (note.accidental === 'flat') { top = yc; height = nh / 2; }
+      if (note.accidental === 'sharp') { height = nh / 2; top = yc - sp / 4 - height / 2; }
+      else if (note.accidental === 'flat') { height = nh / 2; top = yc + sp / 4 - height / 2; }
       else { top = yc - nh / 2; height = nh; }
-      // slope the right edge to mark the hand: RH pulls the top corner left,
+      // slope the left edge to mark the hand: RH pulls the top corner right,
       // LH the bottom corner — a full diagonal either way.
       const slope = Math.min(wpx * 0.6, height);
       const isR = note.hand !== 'L';
