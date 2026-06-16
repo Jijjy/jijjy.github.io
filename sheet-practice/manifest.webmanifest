@@ -1,0 +1,14 @@
+{
+  "name": "Sheet Practice",
+  "short_name": "SheetPractice",
+  "description": "Practice piano from MIDI, MusicXML, or infinite generated material — grand-staff piano-roll with fingering colours, audio playback, and MIDI wait-for-key.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#05070b",
+  "theme_color": "#05070b",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
