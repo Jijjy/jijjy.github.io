@@ -365,6 +365,27 @@ function wireUI() {
     setVolume(db);
     $('lbl-vol').textContent = `${Math.round((db - +el.min) / (+el.max - +el.min) * 100)}%`;
   });
+
+  $('btn-collapse').addEventListener('click', () => setBarCollapsed(!document.body.classList.contains('bar-collapsed')));
+  $('panel-toggle').addEventListener('click', () => setPanelCollapsed(!$('panel').classList.contains('collapsed')));
+
+  // start collapsed on phones to keep the staff visible; expand on wide screens
+  const narrow = window.matchMedia('(max-width: 760px)');
+  const applyResponsive = (m) => { setBarCollapsed(m.matches); setPanelCollapsed(m.matches); };
+  applyResponsive(narrow);
+  narrow.addEventListener('change', applyResponsive);
+}
+
+function setBarCollapsed(on) {
+  document.body.classList.toggle('bar-collapsed', on);
+  const btn = $('btn-collapse');
+  btn.classList.toggle('on', !on);
+  btn.setAttribute('aria-expanded', String(!on));
+}
+
+function setPanelCollapsed(on) {
+  $('panel').classList.toggle('collapsed', on);
+  $('panel-toggle').setAttribute('aria-expanded', String(!on));
 }
 
 // keep the side panel clear of the top bar even when the bar wraps to 2 rows

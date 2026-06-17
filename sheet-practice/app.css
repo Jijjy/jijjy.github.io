@@ -133,6 +133,21 @@ button:disabled {
   cursor: pointer;
 }
 
+/* ---------- bar collapse toggle ---------- */
+.bar-toggle {
+  display: none;
+  /* shown on narrow viewports only */
+}
+
+body.bar-collapsed #bar .collapsible {
+  display: none;
+}
+
+#btn-collapse.on {
+  background: #2563eb;
+  color: #fff;
+}
+
 /* ---------- side panel: flat card ---------- */
 #panel {
   position: fixed;
@@ -145,6 +160,38 @@ button:disabled {
   border: 2px solid #1c2838;
   border-radius: 10px;
   padding: 18px 20px;
+}
+
+.panel-toggle {
+  display: none;
+  /* shown only when the panel is collapsible (narrow viewports) */
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #6f93f0;
+  background: transparent;
+  padding: 4px 2px;
+}
+
+.panel-toggle .caret {
+  transition: transform .15s;
+}
+
+#panel.collapsed .panel-toggle .caret {
+  transform: rotate(-90deg);
+}
+
+#panel.collapsed {
+  padding-bottom: 10px;
+}
+
+#panel.collapsed #panel-body {
+  display: none;
 }
 
 #panel h3 {
@@ -246,4 +293,88 @@ button:disabled {
   color: #aebcca;
   background: #0b1119;
   border-top: 2px solid #1c2838;
+}
+
+/* ---------- mobile / narrow viewports ---------- */
+@media (max-width: 760px) {
+  #bar {
+    gap: 8px;
+    padding: 6px max(6px, env(safe-area-inset-left)) 6px max(6px, env(safe-area-inset-right));
+  }
+
+  .group {
+    gap: 6px;
+  }
+
+  .group.sliders {
+    gap: 12px;
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
+  button,
+  .filebtn,
+  select,
+  .chk {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+
+  .chk {
+    gap: 8px;
+  }
+
+  .chk input {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* the collapse toggle is only useful where space is tight */
+  .bar-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .sliders label {
+    font-size: 12px;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .sliders input[type=range] {
+    width: 100%;
+    min-width: 80px;
+  }
+
+  #panel {
+    left: 10px;
+    right: 10px;
+    max-width: none;
+    padding: 10px 14px;
+  }
+
+  .panel-toggle {
+    display: flex;
+  }
+
+  #panel h3 {
+    font-size: 14px;
+  }
+
+  #panel h3:first-of-type {
+    margin-top: 12px;
+  }
+
+  #parts label,
+  #legend {
+    font-size: 15px;
+  }
+
+  #status {
+    padding: 8px 14px;
+    font-size: 14px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
 }

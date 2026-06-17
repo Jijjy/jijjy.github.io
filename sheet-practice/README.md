@@ -5,25 +5,18 @@ grand staff (piano-roll-on-staff): X = time, Y = pitch on/between the lines.
 Notes are coloured by suggested finger. Play and hear them, or play along on a
 MIDI keyboard with a wait-for-key mode.
 
-Static — no build step. Serve the repo and open `sheet-practice/`.
+Static — no build step. The app is served over HTTP from `sheet-practice/`
+(relative to the repo root, so `../libs/not3.min.js` resolves).
 
-## Run locally
-
-```
-# from the repo root (so ../libs/not3.min.js resolves)
-python3 -m http.server 8000
-# open http://localhost:8000/sheet-practice/
-```
-
-A local server is required (ES modules + service worker won't load from
-`file://`). Audio and Web MIDI also require a user gesture / HTTPS (localhost
+A web server is required — ES modules and the service worker won't load from
+`file://`. Audio and Web MIDI also require a user gesture / HTTPS (`localhost`
 counts).
 
 ## Sources
 
-- **🎲 Procedural** — infinite generated material (port of the `gen2.py` motif
-  engine: interval-weighted scale walk + 2-bar rhythm templates + chord
-  progression + sectional density). Right hand = melody, left hand = bass.
+- **🎲 Procedural** — infinite generated material from a motif engine:
+  interval-weighted scale walk + 2-bar rhythm templates + chord progression +
+  sectional density. Right hand = melody, left hand = bass.
 - **📂 Open** — load `.mid`, `.xml`/`.musicxml`, or `.mxl`. Each track/part is
   selectable in the Parts panel, so you can show only (say) the piano and hide
   harp/drums. MusicXML honours written enharmonic spelling and any embedded
