@@ -31,7 +31,9 @@
       <button id="btn-midi">🎹</button>
     </div>
 
-    <div class="group">
+    <button id="btn-collapse" class="bar-toggle" title="Show/hide controls" aria-label="Show or hide controls" aria-expanded="true">⚙</button>
+
+    <div class="group collapsible">
       <label class="chk"><input type="checkbox" id="chk-practice"> Wait-for-key</label>
       <select id="sel-hand" title="Which hand must be played">
         <option value="both">Both hands</option>
@@ -40,7 +42,7 @@
       </select>
     </div>
 
-    <div class="group sliders">
+    <div class="group sliders collapsible">
       <label><span class="lbl-row">Tempo <span id="lbl-tempo">82 BPM</span></span>
         <input id="rng-tempo" type="range" min="20" max="240" step="1" value="82"></label>
       <label><span class="lbl-row">Window <span id="lbl-speed">6.0s</span></span>
@@ -57,10 +59,15 @@
   </header>
 
   <aside id="panel">
-    <h3>Parts</h3>
-    <div id="parts"></div>
-    <h3>Fingers</h3>
-    <div id="legend"></div>
+    <button id="panel-toggle" class="panel-toggle" aria-expanded="true">
+      <span>Parts &amp; Fingers</span><span class="caret">▾</span>
+    </button>
+    <div id="panel-body">
+      <h3>Parts</h3>
+      <div id="parts"></div>
+      <h3>Fingers</h3>
+      <div id="legend"></div>
+    </div>
   </aside>
 
   <footer id="status">Loading…</footer>

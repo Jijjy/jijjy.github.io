@@ -1,6 +1,6 @@
 // sw.js — offline caching. Precache the app shell; runtime-cache CDN modules
 // and piano samples on first use so subsequent loads work offline.
-const CACHE = 'sheet-practice-v4';
+const CACHE = 'sheet-practice-v5';
 const SHELL = [
   './',
   './index.html',
