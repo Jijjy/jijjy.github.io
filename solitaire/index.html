@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2e6b45">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Solitaire</title>
+  <link rel="stylesheet" href="../games.css">
+  <style>
+    body {
+      background: #2e6b45;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .topbar .btn { border-color: #fff; color: #1d1914; background: #fff; }
+    .topbar .btn:disabled { opacity: 0.45; }
+
+    .help { text-align: center; font-size: 1.1rem; margin: 0 16px 6px; color: #e3f1e7; }
+
+    #table {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .slot, .card {
+      position: absolute;
+      border-radius: 12px;
+    }
+
+    .slot {
+      border: 3px dashed rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .card {
+      background: #fff;
+      border: 2px solid #8a8a8a;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      color: #111;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .card.red { color: #c62828; }
+
+    .card.down {
+      background: repeating-linear-gradient(45deg, #1f4e8c 0 8px, #2a63ad 8px 16px);
+      border: 4px solid #fff;
+    }
+
+    .card .corner {
+      position: absolute;
+      left: 6%;
+      top: 2%;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .card .center {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8%;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .card.hint { box-shadow: 0 0 0 6px #ffd54f, 0 2px 4px rgba(0, 0, 0, 0.35); }
+    .slot.hint { border-color: #ffd54f; border-style: solid; }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <a class="btn" href="../">🏠 Home</a>
+    <h1>Solitaire</h1>
+    <button class="btn" id="undo">↩️ Undo</button>
+    <button class="btn" id="hint">💡 Hint</button>
+    <button class="btn" id="new">🔄 New</button>
+  </div>
+  <p class="help">Tap a card to move it. Tap the deck for a new card.</p>
+
+  <div id="table"></div>
+
+  <div class="overlay" id="win">
+    <div class="box" style="color:var(--fg)">
+      <div class="big">🎉</div>
+      <h2>You won!</h2>
+      <p>All the cards are home.</p>
+      <div class="actions"><button class="btn primary" data-new>Play again</button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="confirm">
+    <div class="box" style="color:var(--fg)">
+      <div class="big">🃏</div>
+      <h2>Start a new game?</h2>
+      <p>This game will end.</p>
+      <div class="actions">
+        <button class="btn primary" data-new>New game</button>
+        <button class="btn" id="cancel">Keep playing</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUITS = ['♠', '♥', '♦', '♣'];
+    const RANKS = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const SAVE_KEY = 'solitaire-v1';
+    const isRed = (c) => c.s === 1 || c.s === 2;
+
+    let S;            // { stock, waste, found[4], tab[7] }
+    let undoStack = [];
+    let finishing = false;
+
+    const $ = (id) => document.getElementById(id);
+    const table = $('table');
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function newGame() {
+      const deck = [];
+      for (let s = 0; s < 4; s++) for (let r = 1; r <= 13; r++) deck.push({ s, r, up: false });
+      shuffle(deck);
+      S = { stock: [], waste: [], found: [[], [], [], []], tab: [] };
+      for (let i = 0; i < 7; i++) {
+        const col = deck.splice(0, i + 1);
+        col[col.length - 1].up = true;
+        S.tab.push(col);
+      }
+      S.stock = deck;
+      undoStack = [];
+      finishing = false;
+      hideOverlays();
+      render();
+      save();
+    }
+
+    function snapshot() {
+      undoStack.push(JSON.stringify(S));
+      if (undoStack.length > 200) undoStack.shift();
+    }
+
+    function last(a) { return a[a.length - 1]; }
+
+    function canFound(card) {
+      const f = S.found[card.s];
+      return card.r === f.length + 1;
+    }
+
+    function canTab(card, col) {
+      const t = last(col);
+      if (!t) return card.r === 13;
+      return t.up && t.r === card.r + 1 && isRed(t) !== isRed(card);
+    }
+
+    // All legal places for the cards starting at `card`.
+    // Returns { kind: 'found' } or { kind: 'tab', i } targets, best first.
+    function targets(src, idx) {
+      const list = sourceList(src);
+      const card = list[idx];
+      const single = idx === list.length - 1;
+      const out = [];
+      if (single && src.kind !== 'found' && canFound(card)) out.push({ kind: 'found' });
+      const empty = [];
+      S.tab.forEach((col, i) => {
+        if (src.kind === 'tab' && src.i === i) return;
+        if (!canTab(card, col)) return;
+        // A king that already sits at the bottom of a column has nowhere better to go.
+        if (!col.length && src.kind === 'tab' && idx === 0) return;
+        (col.length ? out : empty).push({ kind: 'tab', i });
+      });
+      return out.concat(empty);
+    }
+
+    function sourceList(src) {
+      if (src.kind === 'waste') return S.waste;
+      if (src.kind === 'found') return S.found[src.i];
+      return S.tab[src.i];
+    }
+
+    function move(src, idx, dst) {
+      snapshot();
+      const list = sourceList(src);
+      const cards = list.splice(idx);
+      if (dst.kind === 'found') S.found[cards[0].s].push(...cards);
+      else S.tab[dst.i].push(...cards);
+      if (src.kind === 'tab') {
+        const t = last(list);
+        if (t) t.up = true;
+      }
+    }
+
+    function tapCard(src, idx, el) {
+      if (finishing) return;
+      clearHint();
+      const list = sourceList(src);
+      const card = list[idx];
+      if (src.kind === 'tab' && !card.up) {
+        if (idx === list.length - 1) { snapshot(); card.up = true; done(); }
+        else shake(el);
+        return;
+      }
+      if (src.kind !== 'tab' && idx !== list.length - 1) return;
+      const t = targets(src, idx);
+      if (!t.length) { shake(el); return; }
+      move(src, idx, t[0]);
+      done();
+    }
+
+    function tapStock() {
+      if (finishing) return;
+      clearHint();
+      if (S.stock.length) {
+        snapshot();
+        const c = S.stock.pop();
+        c.up = true;
+        S.waste.push(c);
+      } else if (S.waste.length) {
+        snapshot();
+        S.stock = S.waste.reverse().map((c) => ({ ...c, up: false }));
+        S.waste = [];
+      } else return;
+      done();
+    }
+
+    function done() {
+      render();
+      save();
+      if (S.found.every((f) => f.length === 13)) {
+        setTimeout(() => $('win').classList.add('show'), 400);
+        return;
+      }
+      // When every card is face up and the deck is used, put the cards home for the player.
+      if (!S.stock.length && !S.waste.length && S.tab.every((c) => c.every((x) => x.up))) autoFinish();
+    }
+
+    function autoFinish() {
+      finishing = true;
+      const step = () => {
+        for (let i = 0; i < 7; i++) {
+          const c = last(S.tab[i]);
+          if (c && canFound(c)) {
+            S.tab[i].pop();
+            S.found[c.s].push(c);
+            render();
+            setTimeout(step, 140);
+            return;
+          }
+        }
+        finishing = false;
+        save();
+        if (S.found.every((f) => f.length === 13)) setTimeout(() => $('win').classList.add('show'), 300);
+      };
+      step();
+    }
+
+    // A move worth suggesting: to the foundation, from the waste,
+    // or a tableau move that turns over a card or empties a column.
+    function findHint() {
+      if (S.waste.length) {
+        const idx = S.waste.length - 1;
+        const t = targets({ kind: 'waste' }, idx);
+        if (t.length) return { src: { kind: 'waste' }, idx };
+      }
+      for (let i = 0; i < 7; i++) {
+        const col = S.tab[i];
+        for (let idx = 0; idx < col.length; idx++) {
+          if (!col[idx].up) continue;
+          const t = targets({ kind: 'tab', i }, idx);
+          if (!t.length) continue;
+          const useful = t[0].kind === 'found' || idx === 0 || !col[idx - 1].up;
+          if (useful) return { src: { kind: 'tab', i }, idx };
+        }
+      }
+      for (let i = 0; i < 7; i++) {
+        const c = last(S.tab[i]);
+        if (c && !c.up) return { src: { kind: 'tab', i }, idx: S.tab[i].length - 1 };
+      }
+      if (S.stock.length || S.waste.length) return { stock: true };
+      return null;
+    }
+
+    let hintTimer = 0;
+    function hint() {
+      clearHint();
+      const h = findHint();
+      if (!h) return;
+      const sel = h.stock ? '[data-stock]'
+        : `[data-src="${h.src.kind}${h.src.i ?? ''}"][data-idx="${h.idx}"]`;
+      const el = table.querySelector(sel);
+      if (el) el.classList.add('hint');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(clearHint, 2500);
+    }
+
+    function clearHint() {
+      for (const el of table.querySelectorAll('.hint')) el.classList.remove('hint');
+    }
+
+    function undo() {
+      if (finishing || !undoStack.length) return;
+      S = JSON.parse(undoStack.pop());
+      hideOverlays();
+      render();
+      save();
+    }
+
+    function shake(el) {
+      el.classList.remove('shake');
+      void el.offsetWidth;
+      el.classList.add('shake');
+    }
+
+    function hideOverlays() {
+      for (const el of document.querySelectorAll('.overlay')) el.classList.remove('show');
+    }
+
+    // ---------- drawing ----------
+    let geo;
+
+    function layout() {
+      const W = table.clientWidth, H = table.clientHeight;
+      const pad = 16;
+      const gap = Math.max(8, W * 0.015);
+      const cw = Math.min((W - pad * 2 - gap * 6) / 7, (H - pad) / 4.2, 150);
+      const ch = cw * 1.4;
+      const left = (W - (cw * 7 + gap * 6)) / 2;
+      geo = { W, H, cw, ch, gap, left, rowTop: 4, tabTop: 4 + ch + gap * 1.5 };
+    }
+
+    const colX = (i) => geo.left + i * (geo.cw + geo.gap);
+
+    function cardEl(card, x, y, src, idx) {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = geo.cw + 'px';
+      el.style.height = geo.ch + 'px';
+      if (card.up) {
+        if (isRed(card)) el.classList.add('red');
+        const corner = document.createElement('div');
+        corner.className = 'corner';
+        corner.style.fontSize = geo.cw * 0.34 + 'px';
+        corner.textContent = RANKS[card.r] + SUITS[card.s];
+        const center = document.createElement('div');
+        center.className = 'center';
+        center.style.fontSize = geo.cw * 0.6 + 'px';
+        center.textContent = SUITS[card.s];
+        el.append(corner, center);
+      } else el.classList.add('down');
+      if (src) {
+        el.dataset.src = src.kind + (src.i ?? '');
+        el.dataset.idx = idx;
+        el.addEventListener('click', (e) => { e.stopPropagation(); tapCard(src, idx, el); });
+      }
+      table.appendChild(el);
+      return el;
+    }
+
+    function slotEl(x, y, label) {
+      const el = document.createElement('div');
+      el.className = 'slot';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = geo.cw + 'px';
+      el.style.height = geo.ch + 'px';
+      el.style.fontSize = geo.cw * 0.4 + 'px';
+      el.textContent = label;
+      table.appendChild(el);
+      return el;
+    }
+
+    function render() {
+      layout();
+      table.textContent = '';
+      const { ch, rowTop, tabTop } = geo;
+
+      // Deck
+      const stockSlot = slotEl(colX(0), rowTop, S.waste.length ? '↻' : '');
+      stockSlot.dataset.stock = '';
+      stockSlot.addEventListener('click', tapStock);
+      if (S.stock.length) {
+        const el = cardEl(S.stock[S.stock.length - 1], colX(0), rowTop);
+        el.dataset.stock = '';
+        el.addEventListener('click', tapStock);
+      }
+
+      // Waste: show the top card only.
+      slotEl(colX(1), rowTop, '');
+      if (S.waste.length) {
+        const idx = S.waste.length - 1;
+        cardEl(S.waste[idx], colX(1), rowTop, { kind: 'waste' }, idx);
+      }
+
+      // Foundations
+      for (let i = 0; i < 4; i++) {
+        const x = colX(3 + i);
+        const s = slotEl(x, rowTop, SUITS[i]);
+        if (i === 1 || i === 2) s.style.color = 'rgba(255,160,160,0.7)';
+        const f = S.found[i];
+        if (f.length) cardEl(f[f.length - 1], x, rowTop, { kind: 'found', i }, f.length - 1);
+      }
+
+      // Columns: squeeze the spacing when a column gets long.
+      const room = geo.H - tabTop - ch - 8;
+      for (let i = 0; i < 7; i++) {
+        const col = S.tab[i];
+        const x = colX(i);
+        const empty = slotEl(x, tabTop, 'K');
+        empty.style.opacity = col.length ? 0 : 1;
+        let downGap = ch * 0.14, upGap = ch * 0.32;
+        const nDown = col.filter((c) => !c.up).length;
+        const nUp = Math.max(0, col.length - nDown - 1);
+        const need = nDown * downGap + nUp * upGap;
+        if (need > room && need > 0) {
+          const k = room / need;
+          downGap *= k;
+          upGap *= k;
+        }
+        let y = tabTop;
+        col.forEach((c, idx) => {
+          cardEl(c, x, y, { kind: 'tab', i }, idx);
+          y += c.up ? upGap : downGap;
+        });
+      }
+
+      $('undo').disabled = !undoStack.length;
+    }
+
+    function save() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify({ S, undoStack: undoStack.slice(-50) })); }
+      catch (e) { /* storage not available */ }
+    }
+
+    function load() {
+      try {
+        const d = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (d && d.S && !d.S.found.every((f) => f.length === 13)) {
+          S = d.S;
+          undoStack = d.undoStack || [];
+          return true;
+        }
+      } catch (e) { /* ignore */ }
+      return false;
+    }
+
+    $('undo').addEventListener('click', undo);
+    $('hint').addEventListener('click', hint);
+    $('new').addEventListener('click', () => $('confirm').classList.add('show'));
+    $('cancel').addEventListener('click', hideOverlays);
+    for (const b of document.querySelectorAll('[data-new]')) b.addEventListener('click', newGame);
+    window.addEventListener('resize', render);
+
+    if (load()) done(); else newGame();
+  </script>
+</body>
+
+</html>

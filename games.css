@@ -1,0 +1,113 @@
+/* Shared style for the game picker and the games.
+   Large text, large tap targets, high contrast, no hover-only cues. */
+:root {
+  --bg: #fbf6ec;
+  --fg: #1d1914;
+  --muted: #5e554a;
+  --card: #ffffff;
+  --border: #d6cab6;
+  --accent: #155e75;
+  --accent-soft: #e0f0f4;
+  --good: #2e7d32;
+  --good-soft: #e3f3e4;
+  --select: #ffe082;
+  --radius: 22px;
+  font-size: clamp(20px, 2.4vw, 28px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.topbar h1 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.btn {
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  min-height: 64px;
+  min-width: 64px;
+  padding: 0 22px;
+  border-radius: 18px;
+  border: 3px solid var(--accent);
+  background: var(--card);
+  color: var(--accent);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.btn.primary { background: var(--accent); color: #fff; }
+.btn:active { transform: scale(0.96); }
+.btn:disabled { opacity: 0.35; transform: none; }
+.btn:focus-visible { outline: 4px solid #f9a825; outline-offset: 3px; }
+
+/* Full-screen message (win, no moves). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(29, 25, 20, 0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 10000;
+}
+
+.overlay.show { display: flex; }
+
+.overlay .box {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.overlay .big { font-size: 4rem; line-height: 1.1; }
+.overlay h2 { font-size: 1.8rem; margin: 12px 0 8px; }
+.overlay p { font-size: 1.2rem; color: var(--muted); margin: 0 0 24px; }
+.overlay .actions { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+.overlay .actions .btn { min-width: 200px; font-size: 1.2rem; }
+
+@keyframes shake {
+  0%, 100% { translate: 0; }
+  20%, 60% { translate: -8px; }
+  40%, 80% { translate: 8px; }
+}
+
+.shake { animation: shake 0.35s; }

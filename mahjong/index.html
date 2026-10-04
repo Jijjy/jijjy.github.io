@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf6ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Mahjong</title>
+  <link rel="stylesheet" href="../games.css">
+  <style>
+    body { display: flex; flex-direction: column; overflow: hidden; height: 100vh; height: 100dvh; }
+
+    .help {
+      text-align: center;
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin: 0 16px 4px;
+    }
+
+    #area {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+    }
+
+    #board {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+    }
+
+    .tile {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fffdf7;
+      border: 3px solid #b8a98f;
+      border-radius: 14px;
+      box-shadow: 5px 6px 0 #a8977a, 7px 10px 10px rgba(0, 0, 0, 0.25);
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.3s, scale 0.3s;
+    }
+
+    /* Tiles that cannot be picked yet are a little darker. */
+    .tile.blocked { background: #e4dccd; }
+    .tile.blocked .face { opacity: 0.6; }
+
+    .tile.selected {
+      background: var(--select);
+      border-color: #f57f17;
+      box-shadow: 0 0 0 5px #f57f17, 5px 6px 0 #a8977a;
+    }
+
+    .tile.hint {
+      background: #c8e6c9;
+      border-color: var(--good);
+      box-shadow: 0 0 0 5px var(--good), 5px 6px 0 #a8977a;
+    }
+
+    .tile.gone { opacity: 0; scale: 0.6; pointer-events: none; }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <a class="btn" href="../">🏠 Home</a>
+    <h1>Mahjong</h1>
+    <button class="btn" id="undo">↩️ Undo</button>
+    <button class="btn" id="hint">💡 Hint</button>
+    <button class="btn" id="new">🔄 New</button>
+  </div>
+  <p class="help">Tap two matching pictures. Light tiles can be picked.</p>
+
+  <div id="area">
+    <div id="board"></div>
+  </div>
+
+  <div class="overlay" id="win">
+    <div class="box">
+      <div class="big">🎉</div>
+      <h2>Well done!</h2>
+      <p>You cleared all the tiles.</p>
+      <div class="actions">
+        <button class="btn primary" data-new="easy">Play easy</button>
+        <button class="btn primary" data-new="normal">Play bigger</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="stuck">
+    <div class="box">
+      <div class="big">🔀</div>
+      <h2>No more matches</h2>
+      <p>Mix up the tiles to keep playing.</p>
+      <div class="actions">
+        <button class="btn primary" id="shuffle">Mix tiles</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="choose">
+    <div class="box">
+      <div class="big">🀄</div>
+      <h2>New game</h2>
+      <p>How many tiles?</p>
+      <div class="actions">
+        <button class="btn primary" data-new="easy">Few tiles</button>
+        <button class="btn primary" data-new="normal">More tiles</button>
+      </div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn" id="cancel">Keep playing</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Easy-to-tell-apart pictures. Each deal uses one pair per picture.
+    const FACES = ['🍎', '🍌', '🍇', '🥕', '🌽', '🌻', '🌷', '🐶', '🐱',
+      '🐟', '🐤', '🚗', '⛵', '🏠', '⭐', '🌙', '☂️', '🔔'];
+
+    function grid(x0, y0, w, h, z) {
+      const out = [];
+      for (let y = y0; y < y0 + h; y++)
+        for (let x = x0; x < x0 + w; x++) out.push({ x, y, z });
+      return out;
+    }
+
+    const LAYOUTS = {
+      easy: [...grid(0, 0, 4, 3, 0), ...grid(1, 1, 2, 1, 1)],                         // 14 tiles
+      normal: [...grid(0, 0, 6, 4, 0), ...grid(1, 1, 4, 2, 1), ...grid(2, 1, 2, 2, 2)], // 36 tiles
+    };
+
+    const SAVE_KEY = 'mahjong-v1';
+    let tiles = [];     // { x, y, z, face, alive }
+    let level = 'easy';
+    let selected = null;
+    let history = [];   // pairs of tile indexes, for undo
+
+    const $ = (id) => document.getElementById(id);
+    const board = $('board');
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function isFree(t, list) {
+      for (const o of list) {
+        if (o === t) continue;
+        if (o.z === t.z + 1 && o.x === t.x && o.y === t.y) return false;
+      }
+      let left = false, right = false;
+      for (const o of list) {
+        if (o.z !== t.z || o.y !== t.y) continue;
+        if (o.x === t.x - 1) left = true;
+        if (o.x === t.x + 1) right = true;
+      }
+      return !left || !right;
+    }
+
+    // Give faces to positions so that the game can always be won:
+    // take away random free pairs from the full layout and give each pair one face.
+    function assignFaces(spots, pairFaces) {
+      for (let attempt = 0; attempt < 500; attempt++) {
+        const left = spots.slice();
+        const faces = shuffle(pairFaces.slice());
+        const result = new Map();
+        let ok = true;
+        while (left.length) {
+          const free = left.filter((t) => isFree(t, left));
+          if (free.length < 2) { ok = false; break; }
+          shuffle(free);
+          const face = faces.pop();
+          for (const t of [free[0], free[1]]) {
+            result.set(t, face);
+            left.splice(left.indexOf(t), 1);
+          }
+        }
+        if (ok) { for (const [t, f] of result) t.face = f; return true; }
+      }
+      return false;
+    }
+
+    function newGame(lv) {
+      level = lv;
+      tiles = LAYOUTS[lv].map((p) => ({ ...p, face: '', alive: true }));
+      const pairs = shuffle(FACES.slice()).slice(0, tiles.length / 2);
+      assignFaces(tiles, pairs);
+      selected = null;
+      history = [];
+      hideOverlays();
+      render();
+    }
+
+    function alive() { return tiles.filter((t) => t.alive); }
+
+    function findPair() {
+      const list = alive();
+      const free = list.filter((t) => isFree(t, list));
+      for (let i = 0; i < free.length; i++)
+        for (let j = i + 1; j < free.length; j++)
+          if (free[i].face === free[j].face) return [free[i], free[j]];
+      return null;
+    }
+
+    function tap(t, el) {
+      clearHint();
+      const list = alive();
+      if (!isFree(t, list)) { shake(el); return; }
+      if (selected === t) { selected = null; render(); return; }
+      if (selected && selected.face === t.face) {
+        selected.alive = false;
+        t.alive = false;
+        history.push([tiles.indexOf(selected), tiles.indexOf(t)]);
+        selected = null;
+        render();
+        afterMove();
+        return;
+      }
+      selected = t;
+      render();
+    }
+
+    function afterMove() {
+      save();
+      if (!alive().length) setTimeout(() => $('win').classList.add('show'), 400);
+      else if (!findPair()) setTimeout(() => $('stuck').classList.add('show'), 500);
+    }
+
+    function undo() {
+      const last = history.pop();
+      if (!last) return;
+      for (const i of last) tiles[i].alive = true;
+      selected = null;
+      hideOverlays();
+      render();
+      save();
+    }
+
+    function mix() {
+      const list = alive();
+      const pairs = [];
+      const count = {};
+      for (const t of list) count[t.face] = (count[t.face] || 0) + 1;
+      for (const f in count) for (let i = 0; i < count[f] / 2; i++) pairs.push(f);
+      assignFaces(list, pairs);
+      history = [];
+      selected = null;
+      hideOverlays();
+      render();
+      save();
+    }
+
+    let hintTimer = 0;
+    function hint() {
+      const pair = findPair();
+      if (!pair) { if (alive().length) $('stuck').classList.add('show'); return; }
+      selected = null;
+      render();
+      for (const t of pair) t.el.classList.add('hint');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(clearHint, 2500);
+    }
+
+    function clearHint() {
+      for (const el of board.querySelectorAll('.hint')) el.classList.remove('hint');
+    }
+
+    function shake(el) {
+      el.classList.remove('shake');
+      void el.offsetWidth;
+      el.classList.add('shake');
+    }
+
+    function hideOverlays() {
+      for (const el of document.querySelectorAll('.overlay')) el.classList.remove('show');
+    }
+
+    function render() {
+      const area = $('area');
+      const cols = Math.max(...tiles.map((t) => t.x)) + 1;
+      const rows = Math.max(...tiles.map((t) => t.y)) + 1;
+      const pad = 24;
+      const w = Math.min(
+        (area.clientWidth - pad * 2) / (cols + 0.3),
+        (area.clientHeight - pad * 2) / (rows * 1.25 + 0.3),
+        150);
+      const h = w * 1.25;
+      const lift = w * 0.12;   // upper layers sit up and left
+      const gap = Math.max(3, w * 0.04);
+      board.style.width = cols * w + 'px';
+      board.style.height = rows * h + 'px';
+      board.style.marginLeft = -(cols * w) / 2 + 'px';
+      board.style.marginTop = -(rows * h) / 2 + 'px';
+
+      board.textContent = '';
+      const list = alive();
+      tiles.forEach((t) => {
+        const el = document.createElement('div');
+        el.className = 'tile';
+        if (!t.alive) el.classList.add('gone');
+        else if (!isFree(t, list)) el.classList.add('blocked');
+        if (t === selected) el.classList.add('selected');
+        el.style.left = t.x * w - t.z * lift + 'px';
+        el.style.top = t.y * h - t.z * lift + 'px';
+        el.style.width = w - gap + 'px';
+        el.style.height = h - gap + 'px';
+        el.style.zIndex = t.z * 1000 + t.y * 20 + t.x;
+        const face = document.createElement('span');
+        face.className = 'face';
+        face.textContent = t.face;
+        face.style.fontSize = w * 0.62 + 'px';
+        el.appendChild(face);
+        el.addEventListener('click', () => tap(t, el));
+        t.el = el;
+        board.appendChild(el);
+      });
+      $('undo').disabled = !history.length;
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+          level, history,
+          tiles: tiles.map(({ x, y, z, face, alive }) => ({ x, y, z, face, alive })),
+        }));
+      } catch (e) { /* storage not available */ }
+    }
+
+    function load() {
+      try {
+        const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (s && s.tiles && s.tiles.some((t) => t.alive)) {
+          level = s.level;
+          tiles = s.tiles;
+          history = s.history || [];
+          return true;
+        }
+      } catch (e) { /* ignore */ }
+      return false;
+    }
+
+    $('undo').addEventListener('click', undo);
+    $('hint').addEventListener('click', hint);
+    $('new').addEventListener('click', () => $('choose').classList.add('show'));
+    $('cancel').addEventListener('click', hideOverlays);
+    $('shuffle').addEventListener('click', mix);
+    for (const b of document.querySelectorAll('[data-new]'))
+      b.addEventListener('click', () => { newGame(b.dataset.new); save(); });
+    window.addEventListener('resize', render);
+
+    if (load()) { render(); if (!findPair()) $('stuck').classList.add('show'); }
+    else newGame('easy');
+  </script>
+</body>
+
+</html>
