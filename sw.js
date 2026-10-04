@@ -14,6 +14,7 @@ const SHELL = [
   '/jigsaw/',
   '/words/',
   '/wordwheel/',
+  '/wordwheel/dictionary.json',
 ];
 
 self.addEventListener('install', (e) => {

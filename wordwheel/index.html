@@ -224,6 +224,14 @@
     let letterR = 0;
     let dragging = false, slid = false, pointer = null;
 
+    // Real words that are not in the boxes count as bonus words.
+    // Until dictionary.json loads (or if it cannot load), only each puzzle's own extra list counts.
+    let dictionary = new Set();
+    fetch('dictionary.json')
+      .then((r) => r.json())
+      .then((d) => { dictionary = new Set(d.words); })
+      .catch(() => { /* use the extra lists only */ });
+
     const $ = (id) => document.getElementById(id);
     const wheel = $('wheel');
     const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -404,7 +412,7 @@
         flash(rowFor(w), 'new');
         say(pick(PRAISE), true);
         afterFind();
-      } else if (p.extra.includes(w)) {
+      } else if (p.extra.includes(w) || dictionary.has(w.toLowerCase())) {
         if (bonus.has(w)) say('You have that one');
         else { bonus.add(w); say('⭐ Bonus word!', true); save(); }
       } else {
