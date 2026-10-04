@@ -16,7 +16,11 @@
   <style>
     body { display: flex; flex-direction: column; overflow: hidden; height: 100vh; height: 100dvh; }
 
-    .help { text-align: center; font-size: 1.15rem; color: var(--muted); margin: 0 16px 4px; }
+    /* No title: the three buttons share one line. */
+    .topbar { flex-wrap: nowrap; gap: 8px; padding: 8px; }
+    .topbar .btn { flex: 1 1 0; min-width: 0; max-width: 200px; padding: 0 8px; gap: 6px; white-space: nowrap; }
+    .topbar .btn:first-child { margin-right: auto; }
+    @media (max-width: 360px) { .topbar .btn { font-size: 0.9rem; padding: 0 4px; gap: 3px; } }
 
     #play {
       flex: 1;
@@ -40,8 +44,6 @@
       filter: grayscale(0.3);
     }
 
-    #board.noguide #guide { display: none; }
-
     .cell {
       position: absolute;
       border: 2px dashed rgba(0, 0, 0, 0.2);
@@ -49,17 +51,20 @@
 
     .cell.hint { border: 6px solid var(--good); background: rgba(46, 125, 50, 0.15); z-index: 2; }
 
-    /* Each loose piece waits in its own place, far enough from the others that pieces never touch. */
+    /* Each loose piece waits in its own place, far enough from the others that pieces never touch.
+       Waiting pieces can be smaller than the picture cells (--k); they grow to full size when moved. */
     .piece {
       position: absolute;
       cursor: grab;
-      transition: left 0.25s, top 0.25s;
+      transform: scale(var(--k, 1));
+      transition: left 0.25s, top 0.25s, transform 0.2s;
       z-index: 10;
       filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
     }
 
     .piece.dragging {
-      transition: none;
+      transition: transform 0.15s;
+      transform: none;
       z-index: 100;
       filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.4));
       cursor: grabbing;
@@ -70,7 +75,17 @@
       filter: drop-shadow(0 0 4px #f57f17) drop-shadow(0 0 4px #f57f17) drop-shadow(0 0 3px #f57f17);
     }
 
+    #winPic {
+      display: block;
+      width: min(320px, 70vw, 40vh);
+      aspect-ratio: 1;
+      margin: 0 auto 8px;
+      border-radius: 8px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
     .piece.placed {
+      transform: none;
       filter: none;
       pointer-events: none;
       z-index: 5;
@@ -81,12 +96,9 @@
 <body>
   <div class="topbar">
     <a class="btn" href="../">🏠 Home</a>
-    <h1>Jigsaw</h1>
-    <button class="btn" id="guideBtn">👁️ Guide</button>
     <button class="btn" id="hint">💡 Hint</button>
     <button class="btn" id="next">🖼️ New</button>
   </div>
-  <p class="help">Move each piece to its place in the picture. Or tap a piece, then tap its place.</p>
 
   <div id="play">
     <div id="board"><div id="guide"></div></div>
@@ -94,7 +106,7 @@
 
   <div class="overlay" id="win">
     <div class="box">
-      <div class="big">🎉</div>
+      <canvas id="winPic"></canvas>
       <h2>Well done!</h2>
       <p>The picture is complete.</p>
       <div class="actions">
@@ -228,27 +240,48 @@
     }
 
     // The picture and the waiting pieces: side by side when the screen is wide,
-    // one above the other when it is tall.
+    // one above the other when it is tall. The picture gets as much room as it can,
+    // while the waiting pieces stay at least MIN_K of their full size.
+    const MIN_K = 0.55;
+
+    // The best grid for the waiting pieces in a w x h area: [k, cols, rows].
+    function trayFit(w, h, s) {
+      let best = [0, N, N];
+      for (let cols = 1; cols <= N * N; cols++) {
+        const rows = Math.ceil(N * N / cols);
+        const k = Math.min(1, w / (cols * PITCH * s), h / (rows * PITCH * s));
+        if (k > best[0]) best = [k, cols, rows];
+      }
+      return best;
+    }
+
     function layout() {
-      const W = play.clientWidth, H = play.clientHeight, pad = 16;
-      const bw = N, tw = N * PITCH, gap = 0.5;   // in piece sizes
+      const W = play.clientWidth, H = play.clientHeight, pad = 8, gap = 12;
       const wide = W > H;
-      const s = wide
-        ? Math.min((W - pad * 2) / (bw + gap + tw), (H - pad * 2) / tw)
-        : Math.min((W - pad * 2) / tw, (H - pad * 2) / (bw + gap + tw));
+      let s = Math.min(W - pad * 2, H - pad * 2) / N, fit = [MIN_K, N, N];
+      for (; s > 8; s *= 0.98) {
+        const tw = wide ? W - pad * 2 - N * s - gap : W - pad * 2;
+        const th = wide ? H - pad * 2 : H - pad * 2 - N * s - gap;
+        if (tw <= 0 || th <= 0) continue;
+        fit = trayFit(tw, th, s);
+        if (fit[0] >= MIN_K) break;
+      }
+      const [k, cols, rows] = fit;
+      const P = PITCH * k * s;   // distance between waiting places
       let bx, by, tx, ty;
       if (wide) {
-        bx = (W - (bw + gap + tw) * s) / 2; by = (H - bw * s) / 2;
-        tx = bx + (bw + gap) * s; ty = (H - tw * s) / 2;
+        bx = (W - (N * s + gap + cols * P)) / 2; by = (H - N * s) / 2;
+        tx = bx + N * s + gap; ty = (H - rows * P) / 2;
       } else {
-        bx = (W - bw * s) / 2; by = (H - (bw + gap + tw) * s) / 2;
-        tx = (W - tw * s) / 2; ty = by + (bw + gap) * s;
+        bx = (W - N * s) / 2; by = (H - (N * s + gap + rows * P)) / 2;
+        tx = (W - cols * P) / 2; ty = by + N * s + gap;
       }
-      geo = { s, bx, by, tx, ty };
+      geo = { s, bx, by, tx, ty, P, cols };
+      play.style.setProperty('--k', k);
 
       board.style.left = bx + 'px';
       board.style.top = by + 'px';
-      board.style.width = board.style.height = bw * s + 'px';
+      board.style.width = board.style.height = N * s + 'px';
 
       for (const el of board.querySelectorAll('.cell')) el.remove();
       for (let k = 0; k < N * N; k++) {
@@ -268,8 +301,8 @@
     function home(pc) {
       const { s, bx, by, tx, ty } = geo;
       if (pc.placed) return [bx + (pc.i % N) * s, by + Math.floor(pc.i / N) * s];
-      const off = (PITCH - 1) / 2 * s;
-      return [tx + (pc.slot % N) * PITCH * s + off, ty + Math.floor(pc.slot / N) * PITCH * s + off];
+      const { P, cols } = geo;
+      return [tx + (pc.slot % cols + 0.5) * P - s / 2, ty + (Math.floor(pc.slot / cols) + 0.5) * P - s / 2];
     }
 
     function place(pc) {
@@ -285,7 +318,31 @@
       if (selected === pc) selected = null;
       place(pc);
       clearHint();
-      if (pieces.every((q) => q.placed)) setTimeout(() => $('win').classList.add('show'), 600);
+      if (pieces.every((q) => q.placed)) setTimeout(showWin, 600);
+    }
+
+    // The complete picture, with the piece lines faintly on it.
+    function showWin() {
+      const size = picture.width, s = size / N;
+      const lines = document.createElement('canvas');
+      lines.width = lines.height = size;
+      const lg = lines.getContext('2d');
+      lg.lineJoin = 'round';
+      lg.lineWidth = size * 0.004;
+      for (const pc of pieces) {
+        lg.save();
+        lg.translate((pc.i % N) * s, Math.floor(pc.i / N) * s);
+        piecePath(lg, s, pc.edges);
+        lg.stroke();
+        lg.restore();
+      }
+      const cv = $('winPic');
+      cv.width = cv.height = size;
+      const g = cv.getContext('2d');
+      g.drawImage(picture, 0, 0);
+      g.globalAlpha = 0.2;
+      g.drawImage(lines, 0, 0);
+      $('win').classList.add('show');
     }
 
     function select(pc) {
@@ -370,7 +427,6 @@
     $('hint').addEventListener('click', hint);
     $('next').addEventListener('click', newPuzzle);
     $('again').addEventListener('click', newPuzzle);
-    $('guideBtn').addEventListener('click', () => board.classList.toggle('noguide'));
     window.addEventListener('resize', layout);
 
     newPuzzle();
