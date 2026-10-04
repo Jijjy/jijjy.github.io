@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf6ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Word Games</title>
+  <link rel="stylesheet" href="../games.css">
+  <style>
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 8px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .question {
+      background: var(--card);
+      border: 3px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .prompt { font-size: 1.3rem; color: var(--muted); }
+    .picture { font-size: 7rem; line-height: 1.1; }
+    .text { font-size: 2.1rem; font-weight: 700; line-height: 1.35; }
+    .text.big { font-size: 3rem; color: var(--accent); }
+
+    .blank {
+      display: inline-block;
+      min-width: 3.5em;
+      border-bottom: 5px solid var(--accent);
+      color: var(--good);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 900px) and (orientation: landscape) {
+      .choices { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .choice {
+      font: inherit;
+      font-size: 2rem;
+      font-weight: 800;
+      min-height: 120px;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 4px solid var(--accent);
+      background: var(--card);
+      color: var(--fg);
+      cursor: pointer;
+      transition: opacity 0.3s, background 0.2s;
+    }
+
+    .choice:active { transform: scale(0.97); }
+    .choice.right { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+    .choice.tried { opacity: 0.3; border-style: dashed; }
+
+    .feedback {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      min-height: 2.2em;
+      color: var(--good);
+    }
+
+    .feedback.soft { color: var(--muted); }
+
+    .stars { font-size: 1.2rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <a class="btn" href="../">🏠 Home</a>
+    <h1 id="title">Word Games</h1>
+    <span class="stars" id="stars"></span>
+    <button class="btn" id="speak" aria-label="Read aloud">🔊 Read</button>
+  </div>
+
+  <main>
+    <section class="question" id="question"></section>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+  </main>
+
+  <script>
+    const PICTURES = [
+      ['🍎', 'Apple'], ['🍌', 'Banana'], ['🍊', 'Orange'], ['🍇', 'Grapes'], ['🥕', 'Carrot'],
+      ['🍞', 'Bread'], ['🧀', 'Cheese'], ['🥚', 'Egg'], ['🎂', 'Cake'], ['☕', 'Cup'],
+      ['🐶', 'Dog'], ['🐱', 'Cat'], ['🐟', 'Fish'], ['🐦', 'Bird'], ['🐄', 'Cow'],
+      ['🐴', 'Horse'], ['🐑', 'Sheep'], ['🐷', 'Pig'], ['🏠', 'House'], ['🚗', 'Car'],
+      ['🚲', 'Bicycle'], ['⛵', 'Boat'], ['🌳', 'Tree'], ['🌹', 'Rose'], ['☀️', 'Sun'],
+      ['🌙', 'Moon'], ['⭐', 'Star'], ['☂️', 'Umbrella'], ['👓', 'Glasses'], ['⏰', 'Clock'],
+      ['🔑', 'Key'], ['👞', 'Shoe'], ['🎩', 'Hat'], ['📖', 'Book'], ['✂️', 'Scissors'],
+      ['🛏️', 'Bed'], ['☎️', 'Telephone'], ['🕯️', 'Candle'], ['🎈', 'Balloon'], ['🔔', 'Bell'],
+    ];
+
+    // [saying with ___, answer, wrong, wrong]
+    const SAYINGS = [
+      ['An apple a day keeps the ___ away', 'doctor', 'cat', 'rain'],
+      ['Every cloud has a silver ___', 'lining', 'spoon', 'bell'],
+      ['The early bird catches the ___', 'worm', 'bus', 'ball'],
+      ['Don\'t count your chickens before they ___', 'hatch', 'sing', 'sleep'],
+      ['A stitch in time saves ___', 'nine', 'money', 'shoes'],
+      ['Better late than ___', 'never', 'early', 'Tuesday'],
+      ['Actions speak louder than ___', 'words', 'drums', 'dogs'],
+      ['Two heads are better than ___', 'one', 'hats', 'three'],
+      ['Where there\'s a will, there\'s a ___', 'way', 'cake', 'door'],
+      ['Birds of a feather flock ___', 'together', 'south', 'slowly'],
+      ['Don\'t cry over spilt ___', 'milk', 'sugar', 'tea'],
+      ['Rome wasn\'t built in a ___', 'day', 'box', 'garden'],
+      ['Practice makes ___', 'perfect', 'noise', 'soup'],
+      ['Look before you ___', 'leap', 'eat', 'sing'],
+      ['There\'s no place like ___', 'home', 'Paris', 'school'],
+      ['Many hands make light ___', 'work', 'bulbs', 'gloves'],
+      ['It\'s raining cats and ___', 'dogs', 'mice', 'hats'],
+      ['As busy as a ___', 'bee', 'chair', 'cloud'],
+      ['As cool as a ___', 'cucumber', 'candle', 'carrot'],
+      ['As good as ___', 'gold', 'tin', 'mud'],
+      ['As quiet as a ___', 'mouse', 'drum', 'lion'],
+      ['As old as the ___', 'hills', 'spoons', 'shoes'],
+      ['Twinkle, twinkle, little ___', 'star', 'cat', 'car'],
+      ['Happy birthday to ___', 'you', 'Monday', 'bed'],
+      ['Mary had a little ___', 'lamb', 'boat', 'hat'],
+      ['Humpty Dumpty sat on a ___', 'wall', 'cake', 'cloud'],
+      ['Bread and ___', 'butter', 'shoes', 'paint'],
+      ['Salt and ___', 'pepper', 'paper', 'water'],
+      ['A cup of ___', 'tea', 'socks', 'sand'],
+      ['Knife and ___', 'fork', 'cup', 'hat'],
+      ['Rock-a-bye baby, on the tree ___', 'top', 'house', 'car'],
+      ['Old MacDonald had a ___', 'farm', 'car', 'cake'],
+    ];
+
+    const OPPOSITES = [
+      ['Hot', 'Cold'], ['Up', 'Down'], ['Big', 'Small'], ['Day', 'Night'], ['Happy', 'Sad'],
+      ['Open', 'Closed'], ['Fast', 'Slow'], ['Yes', 'No'], ['In', 'Out'], ['Wet', 'Dry'],
+      ['Old', 'Young'], ['Light', 'Dark'], ['Full', 'Empty'], ['Loud', 'Quiet'], ['Black', 'White'],
+      ['Left', 'Right'], ['Early', 'Late'], ['Summer', 'Winter'], ['Push', 'Pull'], ['Top', 'Bottom'],
+      ['Sweet', 'Sour'], ['Hard', 'Soft'], ['Rich', 'Poor'], ['Win', 'Lose'], ['Front', 'Back'],
+    ];
+
+    // Wrong options that could also count as right, so they are never offered.
+    const ALSO_RIGHT = {
+      Loud: ['Soft'], Soft: ['Loud'], Black: ['Light'], Light: ['Black'],
+      Dark: ['White'], White: ['Dark'], Day: ['Dark'], Night: ['Light'],
+      Up: ['Bottom'], Bottom: ['Up'], Down: ['Top'], Top: ['Down'],
+    };
+
+    const PRAISE = ['Well done!', 'That\'s right!', 'Lovely!', 'Very good!', 'Perfect!', 'Wonderful!'];
+
+    const shuffle = (a) => {
+      a = a.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    };
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+    const $ = (id) => document.getElementById(id);
+
+    // Each mode makes one question: { html, say, answer, options }.
+    const MODES = {
+      pictures: {
+        title: 'Picture Words',
+        items: PICTURES,
+        make([emoji, word]) {
+          const others = shuffle(PICTURES.filter((p) => p[1] !== word)).slice(0, 2).map((p) => p[1]);
+          return {
+            html: `<div class="prompt">What is this?</div><div class="picture">${emoji}</div>`,
+            say: 'What is this?',
+            answer: word,
+            options: shuffle([word, ...others]),
+          };
+        },
+      },
+      sayings: {
+        title: 'Finish the Saying',
+        items: SAYINGS,
+        make([text, answer, a, b]) {
+          const [before, after] = text.split('___');
+          return {
+            html: `<div class="prompt">What comes next?</div>
+                   <div class="text">${before}<span class="blank" id="blank">&nbsp;</span>${after}</div>`,
+            say: before + ' … ' + after,
+            answer,
+            options: shuffle([answer, a, b]),
+            fill: true,
+          };
+        },
+      },
+      opposites: {
+        title: 'Opposites',
+        items: OPPOSITES.flatMap(([a, b]) => [[a, b], [b, a]]),
+        make([word, answer]) {
+          const used = new Set([word, answer, ...(ALSO_RIGHT[word] || [])]);
+          const others = shuffle(OPPOSITES.flat().filter((w) => !used.has(w))).slice(0, 2);
+          return {
+            html: `<div class="prompt">What is the opposite of</div><div class="text big">${word}?</div>`,
+            say: 'What is the opposite of ' + word + '?',
+            answer,
+            options: shuffle([answer, ...others]),
+          };
+        },
+      },
+    };
+
+    let mode, deck = [], q, stars = 0, locked = false;
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.85;
+      speechSynthesis.speak(u);
+    }
+
+    function next() {
+      if (!deck.length) deck = shuffle(mode.items);
+      q = mode.make(deck.pop());
+      locked = false;
+      $('question').innerHTML = q.html;
+      $('feedback').textContent = '';
+      $('feedback').className = 'feedback';
+      const box = $('choices');
+      box.textContent = '';
+      for (const opt of q.options) {
+        const b = document.createElement('button');
+        b.className = 'choice';
+        b.textContent = opt;
+        b.addEventListener('click', () => choose(b, opt));
+        box.appendChild(b);
+      }
+    }
+
+    // No penalty for a wrong pick: that button fades and the player tries again.
+    function choose(btn, opt) {
+      if (locked || btn.disabled) return;
+      if (opt === q.answer) {
+        locked = true;
+        btn.classList.add('right');
+        btn.textContent = '✓ ' + opt;
+        if (q.fill) $('blank').textContent = opt;
+        const praise = pick(PRAISE);
+        $('feedback').textContent = praise;
+        stars++;
+        $('stars').textContent = '⭐ ' + stars;
+        setTimeout(next, 1800);
+      } else {
+        btn.classList.add('tried');
+        btn.disabled = true;
+        $('feedback').textContent = 'Try another one';
+        $('feedback').className = 'feedback soft';
+      }
+    }
+
+    function start() {
+      const name = location.hash.slice(1);
+      mode = MODES[name] || MODES.pictures;
+      document.title = mode.title;
+      $('title').textContent = mode.title;
+      deck = [];
+      next();
+    }
+
+    $('speak').addEventListener('click', () => speak(q.say + ' ' + q.options.join(', ') + '?'));
+    if (!('speechSynthesis' in window)) $('speak').style.display = 'none';
+    window.addEventListener('hashchange', start);
+    start();
+  </script>
+</body>
+
+</html>
