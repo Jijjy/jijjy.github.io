@@ -13,6 +13,7 @@ const SHELL = [
   '/solitaire/',
   '/jigsaw/',
   '/words/',
+  '/wordwheel/',
 ];
 
 self.addEventListener('install', (e) => {

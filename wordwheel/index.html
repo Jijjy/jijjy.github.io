@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf6ec">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Games">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <title>Word Wheel</title>
+  <link rel="stylesheet" href="../games.css">
+  <style>
+    body { display: flex; flex-direction: column; overflow: hidden; height: 100vh; height: 100dvh; }
+
+    .help {
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin: 0 16px 4px;
+    }
+
+    #play {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1.3fr);
+      gap: 8px;
+      padding: 0 16px 16px;
+    }
+
+    @media (orientation: landscape) {
+      #play { grid-template-rows: minmax(0, 1fr); grid-template-columns: 1fr 1fr; }
+    }
+
+    #board {
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #words {
+      --s: 60px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: calc(var(--s) * 0.35) calc(var(--s) * 0.8);
+    }
+
+    .word { display: flex; flex-shrink: 0; gap: calc(var(--s) * 0.08); }
+
+    .cell {
+      width: var(--s);
+      height: var(--s);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      border: 3px solid var(--border);
+      border-radius: calc(var(--s) * 0.18);
+      font-size: calc(var(--s) * 0.62);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .cell.hinted { color: var(--accent); }
+    .word.found .cell { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+    .word.new .cell { animation: pop 0.45s; }
+    .word.again .cell { animation: glow 0.9s; }
+
+    @keyframes pop { 50% { scale: 1.2; } }
+    @keyframes glow { 30%, 70% { background: var(--select); } }
+
+    #side {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #msg {
+      font-size: 1.3rem;
+      font-weight: 700;
+      min-height: 1.4em;
+      color: var(--muted);
+      text-align: center;
+      transition: opacity 0.4s;
+    }
+
+    #msg.good { color: var(--good); }
+
+    .entry { display: flex; align-items: center; gap: 16px; }
+
+    #current {
+      min-width: 5em;
+      min-height: 1.3em;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: var(--accent);
+    }
+
+    #wheelBox {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #wheel {
+      position: relative;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      border: 3px solid var(--border);
+      touch-action: none;
+    }
+
+    #wheel svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+    .letter {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--card);
+      border: 3px solid var(--accent);
+      color: var(--accent);
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .letter.on { background: var(--accent); color: #fff; }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <a class="btn" href="../">🏠 Home</a>
+    <h1 id="title">Word Wheel</h1>
+    <button class="btn" id="mix">🔀 Mix</button>
+    <button class="btn" id="hint">💡 Hint</button>
+  </div>
+  <p class="help">Slide across the letters, or tap them, to make a word. Fill all the boxes.</p>
+
+  <div id="play">
+    <div id="board">
+      <div id="words"></div>
+    </div>
+    <div id="side">
+      <div id="msg"></div>
+      <div class="entry">
+        <button class="btn" id="clear" aria-label="Clear">✖</button>
+        <div id="current"></div>
+        <button class="btn primary" id="enter" aria-label="Enter">✔</button>
+      </div>
+      <div id="wheelBox">
+        <div id="wheel"><svg><polyline id="line" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="win">
+    <div class="box">
+      <div class="big">🎉</div>
+      <h2>Well done!</h2>
+      <p id="winText">You found all the words.</p>
+      <div class="actions">
+        <button class="btn primary" id="next">Next puzzle</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // [letters, words to find, other real words that count as bonus words]
+    const PUZZLES = [
+      ['STAR', 'STAR RATS ARTS ART RAT SAT TAR', 'TSAR TARS TAS'],
+      ['PETS', 'PEST PETS STEP PET SET', 'SEPT'],
+      ['HOMES', 'HOMES HOME SHOE HOSE SOME HEM HOE SHE', 'HOES MOSH OHMS OHM OHS EMS'],
+      ['CLOUD', 'CLOUD COULD LOUD COLD CLOD OLD COD CUD DUO', 'COL'],
+      ['FLOWS', 'FLOWS FOWLS FLOW FOWL WOLF SLOW OWLS OWL LOW SOW', 'LOWS SOL'],
+      ['PLANT', 'PLANT PANT PLAN PAN NAP ANT TAN TAP PAT LAP', 'APT PAL ALP PLAT'],
+      ['TRAIN', 'TRAIN RAIN RANT AIR ANT ART RAN RAT TAN TIN', 'TARN TAR NIT AIT RIA'],
+      ['SMILE', 'SMILE SLIME MILES MILE LIME ISLE LIES SLIM LIE ELM',
+        'LIMES ELMS MILS LEIS SEMI MIS ISM EMS LEI MIL'],
+      ['HORSE', 'HORSE SHORE HERO HERS HOSE SHOE ROSE SORE HER HOE ORE SHE',
+        'HOES HEROS RHOS EROS ROES ORES OHS ROE RHO'],
+      ['BAKER', 'BAKER BREAK BRAKE BAKE BARK BEAK BEAR BARE RAKE ARK EAR ARE', 'ERA BRA KERB BRAE'],
+      ['GARDEN', 'GARDEN DANGER RANGE ANGER GRAND NEAR EARN READ DEAR GEAR RAGE DRAG',
+        'RANGED GANDER GRADE RAGED DARE DEAN AGED GRAD RANG DANG AND AGE ARE EAR ERA END DEN RED RAG NAG GAD RAN RAD ERG'],
+      ['CANDLE', 'CANDLE CLEAN DANCE LANCE CLAN LACE LAND LANE LEAN DEAL LEAD CANE',
+        'LANCED CANED ACNED DECAL LACED ELAND ACNE DEAN LADE CLAD DACE AND CAN DEN END LED LAD ALE ACE CAD ELD'],
+      ['PLANET', 'PLANET PLANE PLATE PANEL PETAL PLANT LEAP LATE NEAT PALE TAPE LANE',
+        'LEAPT PLEAT TALE TEAL PEAL PLAN PANT LEAN PANE PEAT PELT LENT NAPE NEAP ANTE PENT PATE ' +
+        'ANT APE APT ATE EAT TEA ETA LAP NAP PAN PAT PEA PEN PET TAN TEN NET TAP LET ALE ALP PAL LEA'],
+    ].map(([letters, words, extra]) => ({
+      letters,
+      words: words.split(' ').sort((a, b) => a.length - b.length || a.localeCompare(b)),
+      extra: extra.split(' '),
+    }));
+
+    const PRAISE = ['Well done!', 'Lovely!', 'Very good!', 'Perfect!', 'Wonderful!'];
+    const SAVE_KEY = 'wordwheel-v1';
+
+    let level = 0;
+    let found = new Set();
+    let bonus = new Set();
+    let hints = {};      // word -> how many letters a hint shows
+    let order = [];      // letters in the order they sit on the wheel
+    let path = [];       // indexes into order
+    let spots = [];      // centers of the wheel letters, in px
+    let letterR = 0;
+    let dragging = false, slid = false, pointer = null;
+
+    const $ = (id) => document.getElementById(id);
+    const wheel = $('wheel');
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const puzzle = () => PUZZLES[level % PUZZLES.length];
+
+    function start(lv) {
+      level = lv;
+      found = new Set();
+      bonus = new Set();
+      hints = {};
+      mix();
+      save();
+    }
+
+    // Letters never sit in the order of a word to find.
+    function mix() {
+      const p = puzzle();
+      do order = shuffle([...p.letters]); while (p.words.includes(order.join('')));
+      path = [];
+      build();
+    }
+
+    function build() {
+      $('title').textContent = 'Word Wheel ' + (level % PUZZLES.length + 1);
+      const box = $('words');
+      box.textContent = '';
+      for (const w of puzzle().words) {
+        const row = document.createElement('div');
+        row.className = 'word';
+        row.dataset.word = w;
+        if (found.has(w)) row.classList.add('found');
+        [...w].forEach((ch, i) => {
+          const c = document.createElement('div');
+          c.className = 'cell';
+          if (found.has(w)) c.textContent = ch;
+          else if (i < (hints[w] || 0)) { c.textContent = ch; c.classList.add('hinted'); }
+          row.appendChild(c);
+        });
+        box.appendChild(row);
+      }
+      for (const el of wheel.querySelectorAll('.letter')) el.remove();
+      order.forEach((ch) => {
+        const el = document.createElement('div');
+        el.className = 'letter';
+        el.textContent = ch;
+        wheel.appendChild(el);
+      });
+      layout();
+    }
+
+    function layout() {
+      // The board: use the largest boxes that still fit.
+      const board = $('board'), box = $('words');
+      for (let s = 96; s >= 20; s -= 2) {
+        box.style.setProperty('--s', s + 'px');
+        if (box.offsetHeight <= board.clientHeight && box.scrollWidth <= box.clientWidth) break;
+      }
+      // The wheel: a circle as big as the space allows.
+      const wb = $('wheelBox');
+      const size = Math.max(160, Math.min(wb.clientWidth, wb.clientHeight, 560));
+      wheel.style.width = wheel.style.height = size + 'px';
+      const n = order.length;
+      const inner = size - 6;                     // less the border
+      letterR = inner * (n <= 5 ? 0.14 : 0.12);
+      const ring = inner / 2 - letterR - inner * 0.05;
+      spots = order.map((_, i) => {
+        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+        return { x: inner / 2 + ring * Math.cos(a), y: inner / 2 + ring * Math.sin(a) };
+      });
+      [...wheel.querySelectorAll('.letter')].forEach((el, i) => {
+        el.style.width = el.style.height = letterR * 2 + 'px';
+        el.style.left = spots[i].x - letterR + 'px';
+        el.style.top = spots[i].y - letterR + 'px';
+        el.style.fontSize = letterR * 1.1 + 'px';
+      });
+      $('line').setAttribute('stroke-width', letterR * 0.35);
+      draw();
+    }
+
+    function draw() {
+      [...wheel.querySelectorAll('.letter')].forEach((el, i) => el.classList.toggle('on', path.includes(i)));
+      const pts = path.map((i) => spots[i]);
+      if (dragging && pointer && pts.length) pts.push(pointer);
+      const line = $('line');
+      line.setAttribute('points', pts.map((p) => p.x + ',' + p.y).join(' '));
+      line.setAttribute('stroke', 'rgba(21, 94, 117, 0.55)');
+      $('current').textContent = path.map((i) => order[i]).join('');
+      $('enter').disabled = $('clear').disabled = !path.length;
+    }
+
+    function pointAt(e) {
+      const r = wheel.getBoundingClientRect();
+      return { x: e.clientX - r.left - 3, y: e.clientY - r.top - 3 };
+    }
+
+    // The letter under the point. A slide must come nearer to the center than a tap.
+    function letterAt(p, reach) {
+      for (let i = 0; i < spots.length; i++)
+        if (Math.hypot(p.x - spots[i].x, p.y - spots[i].y) < letterR * reach) return i;
+      return -1;
+    }
+
+    wheel.addEventListener('pointerdown', (e) => {
+      const p = pointAt(e);
+      const i = letterAt(p, 1.1);
+      if (i < 0) return;
+      e.preventDefault();
+      wheel.setPointerCapture(e.pointerId);
+      dragging = true;
+      slid = false;
+      pointer = p;
+      if (path[path.length - 1] === i) path.pop();        // tap the last letter again to take it away
+      else if (!path.includes(i)) path.push(i);
+      draw();
+    });
+
+    wheel.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      pointer = pointAt(e);
+      const i = letterAt(pointer, 0.8);
+      if (i >= 0 && path.length) {
+        if (!path.includes(i)) { path.push(i); slid = true; }
+        else if (path[path.length - 2] === i) { path.pop(); slid = true; }   // slide back to undo a letter
+      }
+      draw();
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      pointer = null;
+      // A slide enters the word at once. Taps wait for the ✔ button.
+      if (slid && path.length >= 2) enter();
+      else draw();
+    }
+    wheel.addEventListener('pointerup', endDrag);
+    wheel.addEventListener('pointercancel', endDrag);
+
+    let msgTimer = 0;
+    function say(text, good) {
+      const m = $('msg');
+      m.textContent = text;
+      m.className = good ? 'good' : '';
+      m.style.opacity = 1;
+      clearTimeout(msgTimer);
+      msgTimer = setTimeout(() => { m.style.opacity = 0; }, 1800);
+    }
+
+    function rowFor(w) { return $('words').querySelector(`[data-word="${w}"]`); }
+
+    function flash(row, cls) {
+      row.classList.remove(cls);
+      void row.offsetWidth;
+      row.classList.add(cls);
+    }
+
+    function enter() {
+      const w = path.map((i) => order[i]).join('');
+      path = [];
+      draw();
+      if (w.length < 2) return;
+      const p = puzzle();
+      if (found.has(w)) {
+        say('You have that one');
+        flash(rowFor(w), 'again');
+      } else if (p.words.includes(w)) {
+        found.add(w);
+        build();
+        flash(rowFor(w), 'new');
+        say(pick(PRAISE), true);
+        afterFind();
+      } else if (p.extra.includes(w)) {
+        if (bonus.has(w)) say('You have that one');
+        else { bonus.add(w); say('⭐ Bonus word!', true); save(); }
+      } else {
+        say(w.length < 3 ? 'Words need 3 letters or more' : 'Try another word');
+        const c = $('current');
+        c.textContent = w;
+        flash(c, 'shake');
+        setTimeout(draw, 600);
+      }
+    }
+
+    function afterFind() {
+      save();
+      if (found.size < puzzle().words.length) return;
+      const b = bonus.size;
+      $('winText').textContent = 'You found all the words.' +
+        (b ? ` And ${b} bonus word${b > 1 ? 's' : ''}!` : '');
+      setTimeout(() => $('win').classList.add('show'), 900);
+    }
+
+    // A hint shows one more letter of the shortest word not found yet.
+    function hint() {
+      const w = puzzle().words.find((x) => !found.has(x));
+      if (!w) return;
+      hints[w] = (hints[w] || 0) + 1;
+      if (hints[w] >= w.length) {
+        found.add(w);
+        build();
+        flash(rowFor(w), 'new');
+        afterFind();
+      } else {
+        build();
+        save();
+      }
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+          level, found: [...found], bonus: [...bonus], hints,
+        }));
+      } catch (e) { /* storage not available */ }
+    }
+
+    function load() {
+      try {
+        const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (s && Number.isInteger(s.level)) {
+          level = s.level;
+          const p = puzzle();
+          found = new Set((s.found || []).filter((w) => p.words.includes(w)));
+          bonus = new Set(s.bonus || []);
+          hints = s.hints || {};
+          return true;
+        }
+      } catch (e) { /* ignore */ }
+      return false;
+    }
+
+    // A keyboard also works: type letters, Enter to try the word, Backspace to take a letter away.
+    document.addEventListener('keydown', (e) => {
+      if ($('win').classList.contains('show')) {
+        if (e.key === 'Enter') $('next').click();
+        return;
+      }
+      if (e.key === 'Enter') { if (path.length) enter(); return; }
+      if (e.key === 'Backspace' || e.key === 'Escape') {
+        if (e.key === 'Escape') path = []; else path.pop();
+        draw();
+        return;
+      }
+      const ch = e.key.toUpperCase();
+      if (ch.length !== 1) return;
+      const i = order.findIndex((c, k) => c === ch && !path.includes(k));
+      if (i >= 0) { path.push(i); draw(); }
+    });
+
+    $('enter').addEventListener('click', enter);
+    $('clear').addEventListener('click', () => { path = []; draw(); });
+    $('mix').addEventListener('click', mix);
+    $('hint').addEventListener('click', hint);
+    $('next').addEventListener('click', () => {
+      $('win').classList.remove('show');
+      start(level + 1);
+    });
+    window.addEventListener('resize', layout);
+
+    if (!load()) start(0);
+    else if (found.size === puzzle().words.length) start(level + 1);
+    else mix();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => { });
+  </script>
+</body>
+
+</html>
