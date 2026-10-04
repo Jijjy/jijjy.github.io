@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf6ec">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Jigsaw</title>
+  <link rel="stylesheet" href="../games.css">
+  <style>
+    body { display: flex; flex-direction: column; overflow: hidden; height: 100vh; height: 100dvh; }
+
+    .help { text-align: center; font-size: 1.15rem; color: var(--muted); margin: 0 16px 4px; }
+
+    #play {
+      flex: 1;
+      position: relative;
+      min-height: 0;
+      touch-action: none;
+    }
+
+    /* Where the picture goes. */
+    #board {
+      position: absolute;
+      background: #fff;
+      outline: 4px solid var(--border);
+      border-radius: 6px;
+    }
+
+    #guide {
+      position: absolute;
+      inset: 0;
+      background-size: 100% 100%;
+      opacity: 0.22;
+      filter: grayscale(0.3);
+    }
+
+    #board.noguide #guide { display: none; }
+
+    .cell {
+      position: absolute;
+      border: 2px dashed rgba(0, 0, 0, 0.25);
+    }
+
+    .cell.hint { border: 6px solid var(--good); background: rgba(46, 125, 50, 0.15); z-index: 2; }
+
+    /* Where the loose pieces wait. Each piece has its own place, so pieces never lie on top of each other. */
+    .slot {
+      position: absolute;
+      border: 3px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    .piece {
+      position: absolute;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+      border: 3px solid #fff;
+      cursor: grab;
+      transition: left 0.25s, top 0.25s, border-radius 0.25s;
+      z-index: 10;
+    }
+
+    .piece.dragging {
+      transition: none;
+      z-index: 100;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+      cursor: grabbing;
+    }
+
+    .piece.selected { border-color: #f57f17; box-shadow: 0 0 0 5px #f57f17; z-index: 20; }
+
+    .piece.placed {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      cursor: default;
+      z-index: 5;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <a class="btn" href="../">🏠 Home</a>
+    <h1>Jigsaw</h1>
+    <button class="btn" id="guideBtn">👁️ Guide</button>
+    <button class="btn" id="hint">💡 Hint</button>
+    <button class="btn" id="next">🖼️ New</button>
+  </div>
+  <p class="help">Move each piece to its place in the picture. Or tap a piece, then tap its place.</p>
+
+  <div id="play">
+    <div id="board"><div id="guide"></div></div>
+  </div>
+
+  <div class="overlay" id="win">
+    <div class="box">
+      <div class="big">🎉</div>
+      <h2>Well done!</h2>
+      <p>The picture is complete.</p>
+      <div class="actions">
+        <button class="btn primary" id="again">Next picture</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Each picture: a background and emoji, one main thing in each of the 9 squares.
+    // Items are [emoji, x, y, size] as parts of the picture width.
+    const SCENES = [
+      {
+        name: 'Garden',
+        bg: [[0, '#8fd0ff'], [0.6, '#d6f1ff'], [0.6, '#8ccf6f'], [1, '#5ea94c']],
+        items: [['☀️', 0.17, 0.17, 0.22], ['☁️', 0.5, 0.15, 0.22], ['🐦', 0.83, 0.18, 0.17],
+          ['🌳', 0.17, 0.5, 0.28], ['🏠', 0.5, 0.48, 0.3], ['🌻', 0.83, 0.52, 0.25],
+          ['🐶', 0.17, 0.83, 0.22], ['🌷', 0.5, 0.84, 0.2], ['🐱', 0.83, 0.83, 0.22]],
+      },
+      {
+        name: 'Farm',
+        bg: [[0, '#a7dcff'], [0.55, '#e3f5ff'], [0.55, '#b5d66b'], [1, '#7fae3f']],
+        items: [['⛅', 0.17, 0.17, 0.22], ['🐦', 0.5, 0.2, 0.16], ['☀️', 0.83, 0.16, 0.22],
+          ['🌲', 0.17, 0.5, 0.28], ['🏡', 0.5, 0.48, 0.3], ['🚜', 0.83, 0.52, 0.24],
+          ['🐄', 0.17, 0.83, 0.24], ['🐔', 0.5, 0.84, 0.21], ['🐑', 0.83, 0.83, 0.23]],
+      },
+      {
+        name: 'Seaside',
+        bg: [[0, '#7fc8f8'], [0.36, '#cdeeff'], [0.36, '#2f8fd1'], [0.7, '#61b6ea'], [0.7, '#f3dca2'], [1, '#e7c77c']],
+        items: [['☀️', 0.17, 0.17, 0.22], ['☁️', 0.5, 0.16, 0.2], ['🐦', 0.83, 0.18, 0.16],
+          ['⛵', 0.17, 0.52, 0.24], ['🐬', 0.5, 0.53, 0.24], ['🚢', 0.83, 0.5, 0.24],
+          ['🐚', 0.17, 0.85, 0.2], ['🦀', 0.5, 0.85, 0.2], ['⛱️', 0.83, 0.82, 0.24]],
+      },
+      {
+        name: 'Fruit',
+        checks: ['#ffffff', '#f6c9c9'],
+        items: [['🍎', 0.17, 0.17, 0.25], ['🍌', 0.5, 0.17, 0.25], ['🍇', 0.83, 0.17, 0.25],
+          ['🍓', 0.17, 0.5, 0.25], ['🍊', 0.5, 0.5, 0.25], ['🍐', 0.83, 0.5, 0.25],
+          ['🍒', 0.17, 0.83, 0.25], ['🍋', 0.5, 0.83, 0.25], ['🍉', 0.83, 0.83, 0.25]],
+      },
+    ];
+
+    const N = 3;
+    const $ = (id) => document.getElementById(id);
+    const play = $('play'), board = $('board');
+
+    let sceneIdx = -1, image = '', pieces = [], selected = null, geo;
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function drawScene(sc, size) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      const g = c.getContext('2d');
+      if (sc.checks) {
+        const n = 8, s = size / n;
+        for (let y = 0; y < n; y++)
+          for (let x = 0; x < n; x++) {
+            g.fillStyle = sc.checks[(x + y) % 2];
+            g.fillRect(x * s, y * s, s, s);
+          }
+      } else {
+        const grad = g.createLinearGradient(0, 0, 0, size);
+        for (const [at, col] of sc.bg) grad.addColorStop(at, col);
+        g.fillStyle = grad;
+        g.fillRect(0, 0, size, size);
+      }
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      for (const [e, x, y, s] of sc.items) {
+        // Emoji draw a bit larger than the font size; keep each one inside its own square.
+        g.font = `${s * 0.85 * size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+        g.fillText(e, x * size, y * size);
+      }
+      return c.toDataURL();
+    }
+
+    function newPuzzle() {
+      sceneIdx = (sceneIdx + 1) % SCENES.length;
+      image = drawScene(SCENES[sceneIdx], 900);
+      $('guide').style.backgroundImage = `url(${image})`;
+      for (const p of pieces) p.el.remove();
+      const slots = shuffle([...Array(N * N).keys()]);
+      pieces = [...Array(N * N).keys()].map((i) => {
+        const el = document.createElement('div');
+        el.className = 'piece';
+        el.style.backgroundImage = `url(${image})`;
+        const p = { i, slot: slots[i], placed: false, el };
+        el.addEventListener('pointerdown', (e) => pointerDown(e, p));
+        play.appendChild(el);
+        return p;
+      });
+      selected = null;
+      $('win').classList.remove('show');
+      layout();
+    }
+
+    // Two 3 by 3 areas: the picture and the waiting pieces.
+    // Side by side when the screen is wide, one above the other when it is tall.
+    function layout() {
+      const W = play.clientWidth, H = play.clientHeight, pad = 20;
+      const wide = W > H;
+      const p = wide
+        ? Math.min((W - pad * 2) / 6.3, (H - pad * 2) / 3)
+        : Math.min((W - pad * 2) / 3, (H - pad * 2) / 6.3);
+      const s = p * 0.92;               // piece size; slots are a bit larger so pieces have space between them
+      const bw = s * N;
+      let bx, by, tx, ty;
+      if (wide) {
+        bx = (W - 6.3 * p) / 2; by = (H - 3 * p) / 2 + (3 * p - bw) / 2;
+        tx = bx + 3.3 * p; ty = (H - 3 * p) / 2;
+      } else {
+        bx = (W - bw) / 2; by = (H - 6.3 * p) / 2;
+        tx = (W - 3 * p) / 2; ty = by + 3.3 * p;
+      }
+      geo = { s, p, bx, by, tx, ty };
+
+      board.style.left = bx + 'px';
+      board.style.top = by + 'px';
+      board.style.width = board.style.height = bw + 'px';
+
+      for (const el of play.querySelectorAll('.slot, .cell')) el.remove();
+      for (let k = 0; k < N * N; k++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.style.left = (k % N) * s + 'px';
+        cell.style.top = Math.floor(k / N) * s + 'px';
+        cell.style.width = cell.style.height = s + 'px';
+        cell.dataset.k = k;
+        cell.addEventListener('click', () => tapCell(k, cell));
+        board.appendChild(cell);
+
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.style.left = tx + (k % N) * p + 'px';
+        slot.style.top = ty + Math.floor(k / N) * p + 'px';
+        slot.style.width = slot.style.height = s + 'px';
+        play.appendChild(slot);
+      }
+      for (const pc of pieces) {
+        pc.el.style.width = pc.el.style.height = s + 'px';
+        pc.el.style.backgroundSize = `${bw}px ${bw}px`;
+        pc.el.style.backgroundPosition = `${-(pc.i % N) * s}px ${-Math.floor(pc.i / N) * s}px`;
+        place(pc);
+      }
+    }
+
+    // Put a piece at its home: its cell in the picture when placed, otherwise its waiting place.
+    function place(pc) {
+      const { s, p, bx, by, tx, ty } = geo;
+      const [x, y] = pc.placed
+        ? [bx + (pc.i % N) * s, by + Math.floor(pc.i / N) * s]
+        : [tx + (pc.slot % N) * p, ty + Math.floor(pc.slot / N) * p];
+      pc.el.style.left = x + 'px';
+      pc.el.style.top = y + 'px';
+      pc.el.classList.toggle('placed', pc.placed);
+    }
+
+    function setPlaced(pc) {
+      pc.placed = true;
+      pc.el.classList.remove('selected');
+      if (selected === pc) selected = null;
+      place(pc);
+      clearHint();
+      if (pieces.every((q) => q.placed)) setTimeout(() => $('win').classList.add('show'), 600);
+    }
+
+    function select(pc) {
+      if (selected) selected.el.classList.remove('selected');
+      selected = selected === pc ? null : pc;
+      if (selected) selected.el.classList.add('selected');
+    }
+
+    function tapCell(k, cell) {
+      if (!selected) return;
+      if (selected.i === k) setPlaced(selected);
+      else {
+        cell.classList.remove('shake');
+        void cell.offsetWidth;
+        cell.classList.add('shake');
+      }
+    }
+
+    // ---------- dragging ----------
+    let drag = null;
+
+    function pointerDown(e, pc) {
+      if (pc.placed || drag || !e.isPrimary) return;
+      e.preventDefault();
+      pc.el.setPointerCapture(e.pointerId);
+      drag = {
+        pc, x0: e.clientX, y0: e.clientY, moving: false,
+        left: parseFloat(pc.el.style.left), top: parseFloat(pc.el.style.top),
+      };
+    }
+
+    play.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+      if (!drag.moving) {
+        if (Math.hypot(dx, dy) < 12) return;
+        drag.moving = true;
+        drag.pc.el.classList.add('dragging');
+      }
+      drag.pc.el.style.left = drag.left + dx + 'px';
+      drag.pc.el.style.top = drag.top + dy + 'px';
+    });
+
+    play.addEventListener('pointerup', () => {
+      const d = drag;
+      drag = null;
+      if (!d) return;
+      const pc = d.pc;
+      if (!d.moving) { select(pc); return; }
+      pc.el.classList.remove('dragging');
+      // Accept the piece when its middle is near enough to its own place.
+      const { s, bx, by } = geo;
+      const cx = parseFloat(pc.el.style.left) + s / 2, cy = parseFloat(pc.el.style.top) + s / 2;
+      const hx = bx + (pc.i % N) * s + s / 2, hy = by + Math.floor(pc.i / N) * s + s / 2;
+      if (Math.abs(cx - hx) < s * 0.6 && Math.abs(cy - hy) < s * 0.6) setPlaced(pc);
+      else place(pc);   // goes back to its waiting place
+    });
+
+    play.addEventListener('pointercancel', () => {
+      if (!drag) return;
+      drag.pc.el.classList.remove('dragging');
+      place(drag.pc);
+      drag = null;
+    });
+
+    let hintTimer = 0;
+    function hint() {
+      clearHint();
+      let pc = selected || pieces.find((q) => !q.placed);
+      if (!pc) return;
+      if (!selected) select(pc);
+      board.querySelector(`.cell[data-k="${pc.i}"]`).classList.add('hint');
+      hintTimer = setTimeout(clearHint, 3000);
+    }
+
+    function clearHint() {
+      clearTimeout(hintTimer);
+      for (const el of board.querySelectorAll('.hint')) el.classList.remove('hint');
+    }
+
+    $('hint').addEventListener('click', hint);
+    $('next').addEventListener('click', newPuzzle);
+    $('again').addEventListener('click', newPuzzle);
+    $('guideBtn').addEventListener('click', () => board.classList.toggle('noguide'));
+    window.addEventListener('resize', layout);
+
+    newPuzzle();
+  </script>
+</body>
+
+</html>

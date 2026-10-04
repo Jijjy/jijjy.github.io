@@ -30,6 +30,7 @@
       min-height: 0;
       margin: 0 auto;
       width: 100%;
+      touch-action: none;
     }
 
     .slot, .card {
@@ -81,6 +82,13 @@
       line-height: 1;
     }
 
+    .card.dragging {
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.45);
+      cursor: grabbing;
+    }
+
+    .card.back { transition: transform 0.2s; }
+
     .card.hint { box-shadow: 0 0 0 6px #ffd54f, 0 2px 4px rgba(0, 0, 0, 0.35); }
     .slot.hint { border-color: #ffd54f; border-style: solid; }
   </style>
@@ -94,7 +102,7 @@
     <button class="btn" id="hint">💡 Hint</button>
     <button class="btn" id="new">🔄 New</button>
   </div>
-  <p class="help">Tap a card to move it. Tap the deck for a new card.</p>
+  <p class="help">Tap or drag a card to move it. Tap the deck for a new card.</p>
 
   <div id="table"></div>
 
@@ -375,7 +383,7 @@
       if (src) {
         el.dataset.src = src.kind + (src.i ?? '');
         el.dataset.idx = idx;
-        el.addEventListener('click', (e) => { e.stopPropagation(); tapCard(src, idx, el); });
+        el.addEventListener('pointerdown', (e) => pointerDown(e, src, idx, el));
       }
       table.appendChild(el);
       return el;
@@ -426,6 +434,7 @@
       }
 
       // Columns: squeeze the spacing when a column gets long.
+      geo.colBottom = [];
       const room = geo.H - tabTop - ch - 8;
       for (let i = 0; i < 7; i++) {
         const col = S.tab[i];
@@ -442,14 +451,94 @@
           upGap *= k;
         }
         let y = tabTop;
+        geo.colBottom[i] = tabTop + ch;
         col.forEach((c, idx) => {
           cardEl(c, x, y, { kind: 'tab', i }, idx);
+          geo.colBottom[i] = y + ch;
           y += c.up ? upGap : downGap;
         });
       }
 
       $('undo').disabled = !undoStack.length;
     }
+
+    // ---------- drag and drop ----------
+    // A short press without movement is a tap; a longer move is a drag.
+    let drag = null;
+
+    function pointerDown(e, src, idx, el) {
+      if (finishing || drag || !e.isPrimary) return;
+      e.preventDefault();
+      el.setPointerCapture(e.pointerId);
+      drag = { src, idx, el, x0: e.clientX, y0: e.clientY, moving: false, els: [] };
+    }
+
+    function canDrag(src, idx) {
+      const list = sourceList(src);
+      if (!list[idx].up) return false;
+      return src.kind === 'tab' || idx === list.length - 1;
+    }
+
+    function pointerMove(e) {
+      if (!drag) return;
+      const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+      if (!drag.moving) {
+        if (Math.hypot(dx, dy) < 12) return;
+        if (!canDrag(drag.src, drag.idx)) return;
+        clearHint();
+        drag.moving = true;
+        const key = drag.src.kind + (drag.src.i ?? '');
+        drag.els = [...table.querySelectorAll(`[data-src="${key}"]`)]
+          .filter((el) => +el.dataset.idx >= drag.idx)
+          .sort((a, b) => a.dataset.idx - b.dataset.idx);
+        drag.els.forEach((el, k) => {
+          el.classList.add('dragging');
+          el.style.zIndex = 5000 + k;
+        });
+      }
+      drag.dx = dx;
+      drag.dy = dy;
+      for (const el of drag.els) el.style.transform = `translate(${dx}px, ${dy}px)`;
+    }
+
+    function pointerUp() {
+      const d = drag;
+      drag = null;
+      if (!d) return;
+      if (!d.moving) { tapCard(d.src, d.idx, d.el); return; }
+      const dst = dropTarget(d);
+      if (dst) { move(d.src, d.idx, dst); done(); return; }
+      // Not a legal place: slide the cards back.
+      for (const el of d.els) { el.classList.add('back'); el.style.transform = ''; }
+      setTimeout(render, 200);
+    }
+
+    // The legal place that the dragged card covers the most.
+    function dropTarget(d) {
+      const x = parseFloat(d.el.style.left) + d.dx, y = parseFloat(d.el.style.top) + d.dy;
+      const { cw, ch, rowTop, tabTop } = geo;
+      const overlap = (rx, ry, rw, rh) =>
+        Math.max(0, Math.min(x + cw, rx + rw) - Math.max(x, rx)) *
+        Math.max(0, Math.min(y + ch, ry + rh) - Math.max(y, ry));
+      const list = sourceList(d.src);
+      const card = list[d.idx];
+      let best = null, bestArea = 0;
+      const consider = (target, area) => { if (area > bestArea) { best = target; bestArea = area; } };
+      if (d.src.kind !== 'found' && d.idx === list.length - 1 && canFound(card)) {
+        // Any of the four foundation places is fine: the card goes to its own suit.
+        for (let i = 0; i < 4; i++) consider({ kind: 'found' }, overlap(colX(3 + i), rowTop, cw, ch));
+      }
+      for (let i = 0; i < 7; i++) {
+        if (d.src.kind === 'tab' && d.src.i === i) continue;
+        if (!canTab(card, S.tab[i])) continue;
+        consider({ kind: 'tab', i }, overlap(colX(i), tabTop, cw, geo.colBottom[i] - tabTop));
+      }
+      return best;
+    }
+
+    table.addEventListener('pointermove', pointerMove);
+    table.addEventListener('pointerup', pointerUp);
+    table.addEventListener('pointercancel', () => { if (drag) { drag = null; render(); } });
 
     function save() {
       try { localStorage.setItem(SAVE_KEY, JSON.stringify({ S, undoStack: undoStack.slice(-50) })); }
