@@ -126,19 +126,22 @@
     const FACES = ['🍎', '🍌', '🍇', '🥕', '🌽', '🌻', '🌷', '🐶', '🐱',
       '🐟', '🐤', '🚗', '⛵', '🏠', '⭐', '🌙', '☂️', '🔔'];
 
+    // Positions are in half-tile units: a tile covers 2 x 2 units.
+    // Odd layers use odd positions, so they sit half a tile across and down from the layer below.
+    // w and h are counts of tiles.
     function grid(x0, y0, w, h, z) {
       const out = [];
-      for (let y = y0; y < y0 + h; y++)
-        for (let x = x0; x < x0 + w; x++) out.push({ x, y, z });
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) out.push({ x: x0 + x * 2, y: y0 + y * 2, z });
       return out;
     }
 
     const LAYOUTS = {
-      easy: [...grid(0, 0, 4, 3, 0), ...grid(1, 1, 2, 1, 1)],                         // 14 tiles
-      normal: [...grid(0, 0, 6, 4, 0), ...grid(1, 1, 4, 2, 1), ...grid(2, 1, 2, 2, 2)], // 36 tiles
+      easy: [...grid(0, 0, 4, 3, 0), ...grid(3, 1, 1, 2, 1)],                         // 14 tiles
+      normal: [...grid(0, 0, 5, 4, 0), ...grid(1, 1, 4, 3, 1), ...grid(4, 2, 1, 2, 2)], // 34 tiles
     };
 
-    const SAVE_KEY = 'mahjong-v1';
+    const SAVE_KEY = 'mahjong-v2';
     let tiles = [];     // { x, y, z, face, alive }
     let level = 'easy';
     let selected = null;
@@ -158,13 +161,14 @@
     function isFree(t, list) {
       for (const o of list) {
         if (o === t) continue;
-        if (o.z === t.z + 1 && o.x === t.x && o.y === t.y) return false;
+        // Any tile on the layer above that touches this tile covers it.
+        if (o.z === t.z + 1 && Math.abs(o.x - t.x) < 2 && Math.abs(o.y - t.y) < 2) return false;
       }
       let left = false, right = false;
       for (const o of list) {
-        if (o.z !== t.z || o.y !== t.y) continue;
-        if (o.x === t.x - 1) left = true;
-        if (o.x === t.x + 1) right = true;
+        if (o.z !== t.z || Math.abs(o.y - t.y) >= 2) continue;
+        if (o.x === t.x - 2) left = true;
+        if (o.x === t.x + 2) right = true;
       }
       return !left || !right;
     }
@@ -289,8 +293,8 @@
 
     function render() {
       const area = $('area');
-      const cols = Math.max(...tiles.map((t) => t.x)) + 1;
-      const rows = Math.max(...tiles.map((t) => t.y)) + 1;
+      const cols = (Math.max(...tiles.map((t) => t.x)) + 2) / 2;
+      const rows = (Math.max(...tiles.map((t) => t.y)) + 2) / 2;
       const pad = 24;
       const w = Math.min(
         (area.clientWidth - pad * 2) / (cols + 0.3),
@@ -312,8 +316,8 @@
         if (!t.alive) el.classList.add('gone');
         else if (!isFree(t, list)) el.classList.add('blocked');
         if (t === selected) el.classList.add('selected');
-        el.style.left = t.x * w - t.z * lift + 'px';
-        el.style.top = t.y * h - t.z * lift + 'px';
+        el.style.left = t.x * w / 2 - t.z * lift + 'px';
+        el.style.top = t.y * h / 2 - t.z * lift + 'px';
         el.style.width = w - gap + 'px';
         el.style.height = h - gap + 'px';
         el.style.zIndex = t.z * 1000 + t.y * 20 + t.x;

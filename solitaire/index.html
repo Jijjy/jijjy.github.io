@@ -135,6 +135,8 @@
   <script>
     const SUITS = ['♠', '♥', '♦', '♣'];
     const RANKS = ['', 'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    // Pictures for jack, queen and king. The suit shows under the picture, in the suit color.
+    const PICTURES = { 11: '💂', 12: '👸', 13: '🤴' };
     const SAVE_KEY = 'solitaire-v1';
     const isRed = (c) => c.s === 1 || c.s === 2;
 
@@ -381,8 +383,16 @@
         corner.textContent = RANKS[card.r] + SUITS[card.s];
         const center = document.createElement('div');
         center.className = 'center';
-        center.style.fontSize = geo.cw * 0.6 + 'px';
-        center.textContent = SUITS[card.s];
+        if (PICTURES[card.r]) {
+          center.style.fontSize = geo.cw * 0.45 + 'px';
+          const pip = document.createElement('div');
+          pip.style.fontSize = geo.cw * 0.3 + 'px';
+          pip.textContent = SUITS[card.s];
+          center.append(PICTURES[card.r], pip);
+        } else {
+          center.style.fontSize = geo.cw * 0.6 + 'px';
+          center.textContent = SUITS[card.s];
+        }
         el.append(corner, center);
       } else el.classList.add('down');
       if (src) {
