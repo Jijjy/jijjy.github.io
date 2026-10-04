@@ -30,7 +30,6 @@
       position: absolute;
       background: #fff;
       outline: 4px solid var(--border);
-      border-radius: 6px;
     }
 
     #guide {
@@ -45,42 +44,35 @@
 
     .cell {
       position: absolute;
-      border: 2px dashed rgba(0, 0, 0, 0.25);
+      border: 2px dashed rgba(0, 0, 0, 0.2);
     }
 
     .cell.hint { border: 6px solid var(--good); background: rgba(46, 125, 50, 0.15); z-index: 2; }
 
-    /* Where the loose pieces wait. Each piece has its own place, so pieces never lie on top of each other. */
-    .slot {
-      position: absolute;
-      border: 3px dashed var(--border);
-      border-radius: 12px;
-    }
-
+    /* Each loose piece waits in its own place, far enough from the others that pieces never touch. */
     .piece {
       position: absolute;
-      border-radius: 10px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-      border: 3px solid #fff;
       cursor: grab;
-      transition: left 0.25s, top 0.25s, border-radius 0.25s;
+      transition: left 0.25s, top 0.25s;
       z-index: 10;
+      filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.35));
     }
 
     .piece.dragging {
       transition: none;
       z-index: 100;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
+      filter: drop-shadow(0 12px 10px rgba(0, 0, 0, 0.4));
       cursor: grabbing;
     }
 
-    .piece.selected { border-color: #f57f17; box-shadow: 0 0 0 5px #f57f17; z-index: 20; }
+    .piece.selected {
+      z-index: 20;
+      filter: drop-shadow(0 0 4px #f57f17) drop-shadow(0 0 4px #f57f17) drop-shadow(0 0 3px #f57f17);
+    }
 
     .piece.placed {
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      cursor: default;
+      filter: none;
+      pointer-events: none;
       z-index: 5;
     }
   </style>
@@ -112,44 +104,22 @@
   </div>
 
   <script>
-    // Each picture: a background and emoji, one main thing in each of the 9 squares.
-    // Items are [emoji, x, y, size] as parts of the picture width.
-    const SCENES = [
-      {
-        name: 'Garden',
-        bg: [[0, '#8fd0ff'], [0.6, '#d6f1ff'], [0.6, '#8ccf6f'], [1, '#5ea94c']],
-        items: [['☀️', 0.17, 0.17, 0.22], ['☁️', 0.5, 0.15, 0.22], ['🐦', 0.83, 0.18, 0.17],
-          ['🌳', 0.17, 0.5, 0.28], ['🏠', 0.5, 0.48, 0.3], ['🌻', 0.83, 0.52, 0.25],
-          ['🐶', 0.17, 0.83, 0.22], ['🌷', 0.5, 0.84, 0.2], ['🐱', 0.83, 0.83, 0.22]],
-      },
-      {
-        name: 'Farm',
-        bg: [[0, '#a7dcff'], [0.55, '#e3f5ff'], [0.55, '#b5d66b'], [1, '#7fae3f']],
-        items: [['⛅', 0.17, 0.17, 0.22], ['🐦', 0.5, 0.2, 0.16], ['☀️', 0.83, 0.16, 0.22],
-          ['🌲', 0.17, 0.5, 0.28], ['🏡', 0.5, 0.48, 0.3], ['🚜', 0.83, 0.52, 0.24],
-          ['🐄', 0.17, 0.83, 0.24], ['🐔', 0.5, 0.84, 0.21], ['🐑', 0.83, 0.83, 0.23]],
-      },
-      {
-        name: 'Seaside',
-        bg: [[0, '#7fc8f8'], [0.36, '#cdeeff'], [0.36, '#2f8fd1'], [0.7, '#61b6ea'], [0.7, '#f3dca2'], [1, '#e7c77c']],
-        items: [['☀️', 0.17, 0.17, 0.22], ['☁️', 0.5, 0.16, 0.2], ['🐦', 0.83, 0.18, 0.16],
-          ['⛵', 0.17, 0.52, 0.24], ['🐬', 0.5, 0.53, 0.24], ['🚢', 0.83, 0.5, 0.24],
-          ['🐚', 0.17, 0.85, 0.2], ['🦀', 0.5, 0.85, 0.2], ['⛱️', 0.83, 0.82, 0.24]],
-      },
-      {
-        name: 'Fruit',
-        checks: ['#ffffff', '#f6c9c9'],
-        items: [['🍎', 0.17, 0.17, 0.25], ['🍌', 0.5, 0.17, 0.25], ['🍇', 0.83, 0.17, 0.25],
-          ['🍓', 0.17, 0.5, 0.25], ['🍊', 0.5, 0.5, 0.25], ['🍐', 0.83, 0.5, 0.25],
-          ['🍒', 0.17, 0.83, 0.25], ['🍋', 0.5, 0.83, 0.25], ['🍉', 0.83, 0.83, 0.25]],
-      },
+    // One big emoji on a soft background makes each picture.
+    const PICTURES = [
+      ['🐶', '#ffe0b2'], ['🐱', '#cfe8ff'], ['🌻', '#c8e6c9'], ['🍎', '#fff3c4'],
+      ['🏠', '#d4ecff'], ['🦋', '#e4f5c8'], ['🐠', '#b3e5fc'], ['🚗', '#e3e3fa'],
+      ['🐘', '#ffe4ec'], ['🦉', '#e6dcd6'], ['🍓', '#e3f4e4'], ['⛵', '#c5e3fb'],
     ];
 
     const N = 3;
+    const TAB = 0.25;      // how far a tab sticks out, as part of the piece size
+    const PAD = 0.28;      // room around each piece drawing for its tabs and outline
+    const PITCH = 1.62;    // distance between waiting places, as piece sizes
     const $ = (id) => document.getElementById(id);
     const play = $('play'), board = $('board');
 
-    let sceneIdx = -1, image = '', pieces = [], selected = null, geo;
+    let picIdx = Math.floor(Math.random() * PICTURES.length) - 1;
+    let picture, pieces = [], selected = null, geo;
 
     function shuffle(a) {
       for (let i = a.length - 1; i > 0; i--) {
@@ -159,44 +129,95 @@
       return a;
     }
 
-    function drawScene(sc, size) {
+    function drawPicture([emoji, color], size) {
       const c = document.createElement('canvas');
       c.width = c.height = size;
       const g = c.getContext('2d');
-      if (sc.checks) {
-        const n = 8, s = size / n;
-        for (let y = 0; y < n; y++)
-          for (let x = 0; x < n; x++) {
-            g.fillStyle = sc.checks[(x + y) % 2];
-            g.fillRect(x * s, y * s, s, s);
-          }
-      } else {
-        const grad = g.createLinearGradient(0, 0, 0, size);
-        for (const [at, col] of sc.bg) grad.addColorStop(at, col);
-        g.fillStyle = grad;
-        g.fillRect(0, 0, size, size);
-      }
+      const grad = g.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.75);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(1, color);
+      g.fillStyle = grad;
+      g.fillRect(0, 0, size, size);
       g.textAlign = 'center';
       g.textBaseline = 'middle';
-      for (const [e, x, y, s] of sc.items) {
-        // Emoji draw a bit larger than the font size; keep each one inside its own square.
-        g.font = `${s * 0.85 * size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
-        g.fillText(e, x * size, y * size);
-      }
-      return c.toDataURL();
+      g.font = `${size * 0.78}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+      g.fillText(emoji, size / 2, size * 0.54);
+      return c;
+    }
+
+    // Edge shapes. For the edge between two pieces, +1 means the first piece
+    // (above, or to the left) has the tab and the second piece has the hole.
+    function makeEdges() {
+      const rnd = () => (Math.random() < 0.5 ? 1 : -1);
+      const h = [...Array(N - 1)].map(() => [...Array(N)].map(rnd));  // below row r
+      const v = [...Array(N)].map(() => [...Array(N - 1)].map(rnd));  // right of column c
+      return (r, c) => ({
+        top: r > 0 ? -h[r - 1][c] : 0,
+        right: c < N - 1 ? v[r][c] : 0,
+        bottom: r < N - 1 ? h[r][c] : 0,
+        left: c > 0 ? -v[r][c - 1] : 0,
+      });
+    }
+
+    // One side of a piece, from (x0, y0) to (x1, y1), going round the piece clockwise.
+    // out: 1 = tab, -1 = hole, 0 = straight.
+    function side(g, x0, y0, x1, y1, out) {
+      if (!out) { g.lineTo(x1, y1); return; }
+      const dx = x1 - x0, dy = y1 - y0;
+      const nx = dy * out, ny = -dx * out;     // points out of the piece
+      const P = (u, w) => [x0 + dx * u + nx * w, y0 + dy * u + ny * w];
+      const curve = (a, b, c) => g.bezierCurveTo(...P(...a), ...P(...b), ...P(...c));
+      g.lineTo(...P(0.36, 0));
+      curve([0.41, 0], [0.43, 0.04], [0.40, 0.09]);
+      curve([0.35, 0.17], [0.42, TAB], [0.5, TAB]);
+      curve([0.58, TAB], [0.65, 0.17], [0.60, 0.09]);
+      curve([0.57, 0.04], [0.59, 0], [0.64, 0]);
+      g.lineTo(x1, y1);
+    }
+
+    function piecePath(g, s, e) {
+      g.beginPath();
+      g.moveTo(0, 0);
+      side(g, 0, 0, s, 0, e.top);
+      side(g, s, 0, s, s, e.right);
+      side(g, s, s, 0, s, e.bottom);
+      side(g, 0, s, 0, 0, e.left);
+      g.closePath();
+    }
+
+    function drawPiece(pc) {
+      const { s } = geo;
+      const dpr = window.devicePixelRatio || 1;
+      const full = s * (1 + 2 * PAD);
+      const cv = pc.el;
+      cv.width = cv.height = Math.round(full * dpr);
+      cv.style.width = cv.style.height = full + 'px';
+      const g = cv.getContext('2d');
+      g.scale(dpr, dpr);
+      g.translate(s * PAD, s * PAD);
+      piecePath(g, s, pc.edges);
+      g.save();
+      g.clip();
+      const r = Math.floor(pc.i / N), c = pc.i % N;
+      g.drawImage(picture, -c * s, -r * s, s * N, s * N);
+      g.restore();
+      g.lineJoin = 'round';
+      g.strokeStyle = 'rgba(0,0,0,0.35)';
+      g.lineWidth = Math.max(1.5, s * 0.012);
+      g.stroke();
     }
 
     function newPuzzle() {
-      sceneIdx = (sceneIdx + 1) % SCENES.length;
-      image = drawScene(SCENES[sceneIdx], 900);
-      $('guide').style.backgroundImage = `url(${image})`;
+      picIdx = (picIdx + 1) % PICTURES.length;
+      picture = drawPicture(PICTURES[picIdx], 900);
+      $('guide').style.backgroundImage = `url(${picture.toDataURL()})`;
+      const edges = makeEdges();
       for (const p of pieces) p.el.remove();
       const slots = shuffle([...Array(N * N).keys()]);
       pieces = [...Array(N * N).keys()].map((i) => {
-        const el = document.createElement('div');
+        const el = document.createElement('canvas');
         el.className = 'piece';
-        el.style.backgroundImage = `url(${image})`;
-        const p = { i, slot: slots[i], placed: false, el };
+        const p = { i, slot: slots[i], placed: false, el, edges: edges(Math.floor(i / N), i % N) };
         el.addEventListener('pointerdown', (e) => pointerDown(e, p));
         play.appendChild(el);
         return p;
@@ -206,31 +227,30 @@
       layout();
     }
 
-    // Two 3 by 3 areas: the picture and the waiting pieces.
-    // Side by side when the screen is wide, one above the other when it is tall.
+    // The picture and the waiting pieces: side by side when the screen is wide,
+    // one above the other when it is tall.
     function layout() {
-      const W = play.clientWidth, H = play.clientHeight, pad = 20;
+      const W = play.clientWidth, H = play.clientHeight, pad = 16;
+      const bw = N, tw = N * PITCH, gap = 0.5;   // in piece sizes
       const wide = W > H;
-      const p = wide
-        ? Math.min((W - pad * 2) / 6.3, (H - pad * 2) / 3)
-        : Math.min((W - pad * 2) / 3, (H - pad * 2) / 6.3);
-      const s = p * 0.92;               // piece size; slots are a bit larger so pieces have space between them
-      const bw = s * N;
+      const s = wide
+        ? Math.min((W - pad * 2) / (bw + gap + tw), (H - pad * 2) / tw)
+        : Math.min((W - pad * 2) / tw, (H - pad * 2) / (bw + gap + tw));
       let bx, by, tx, ty;
       if (wide) {
-        bx = (W - 6.3 * p) / 2; by = (H - 3 * p) / 2 + (3 * p - bw) / 2;
-        tx = bx + 3.3 * p; ty = (H - 3 * p) / 2;
+        bx = (W - (bw + gap + tw) * s) / 2; by = (H - bw * s) / 2;
+        tx = bx + (bw + gap) * s; ty = (H - tw * s) / 2;
       } else {
-        bx = (W - bw) / 2; by = (H - 6.3 * p) / 2;
-        tx = (W - 3 * p) / 2; ty = by + 3.3 * p;
+        bx = (W - bw * s) / 2; by = (H - (bw + gap + tw) * s) / 2;
+        tx = (W - tw * s) / 2; ty = by + (bw + gap) * s;
       }
-      geo = { s, p, bx, by, tx, ty };
+      geo = { s, bx, by, tx, ty };
 
       board.style.left = bx + 'px';
       board.style.top = by + 'px';
-      board.style.width = board.style.height = bw + 'px';
+      board.style.width = board.style.height = bw * s + 'px';
 
-      for (const el of play.querySelectorAll('.slot, .cell')) el.remove();
+      for (const el of board.querySelectorAll('.cell')) el.remove();
       for (let k = 0; k < N * N; k++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
@@ -240,30 +260,22 @@
         cell.dataset.k = k;
         cell.addEventListener('click', () => tapCell(k, cell));
         board.appendChild(cell);
-
-        const slot = document.createElement('div');
-        slot.className = 'slot';
-        slot.style.left = tx + (k % N) * p + 'px';
-        slot.style.top = ty + Math.floor(k / N) * p + 'px';
-        slot.style.width = slot.style.height = s + 'px';
-        play.appendChild(slot);
       }
-      for (const pc of pieces) {
-        pc.el.style.width = pc.el.style.height = s + 'px';
-        pc.el.style.backgroundSize = `${bw}px ${bw}px`;
-        pc.el.style.backgroundPosition = `${-(pc.i % N) * s}px ${-Math.floor(pc.i / N) * s}px`;
-        place(pc);
-      }
+      for (const pc of pieces) { drawPiece(pc); place(pc); }
     }
 
-    // Put a piece at its home: its cell in the picture when placed, otherwise its waiting place.
+    // Where the square part of a piece sits: its cell in the picture, or its waiting place.
+    function home(pc) {
+      const { s, bx, by, tx, ty } = geo;
+      if (pc.placed) return [bx + (pc.i % N) * s, by + Math.floor(pc.i / N) * s];
+      const off = (PITCH - 1) / 2 * s;
+      return [tx + (pc.slot % N) * PITCH * s + off, ty + Math.floor(pc.slot / N) * PITCH * s + off];
+    }
+
     function place(pc) {
-      const { s, p, bx, by, tx, ty } = geo;
-      const [x, y] = pc.placed
-        ? [bx + (pc.i % N) * s, by + Math.floor(pc.i / N) * s]
-        : [tx + (pc.slot % N) * p, ty + Math.floor(pc.slot / N) * p];
-      pc.el.style.left = x + 'px';
-      pc.el.style.top = y + 'px';
+      const [x, y] = home(pc);
+      pc.el.style.left = x - geo.s * PAD + 'px';
+      pc.el.style.top = y - geo.s * PAD + 'px';
       pc.el.classList.toggle('placed', pc.placed);
     }
 
@@ -326,7 +338,8 @@
       pc.el.classList.remove('dragging');
       // Accept the piece when its middle is near enough to its own place.
       const { s, bx, by } = geo;
-      const cx = parseFloat(pc.el.style.left) + s / 2, cy = parseFloat(pc.el.style.top) + s / 2;
+      const cx = parseFloat(pc.el.style.left) + s * (PAD + 0.5);
+      const cy = parseFloat(pc.el.style.top) + s * (PAD + 0.5);
       const hx = bx + (pc.i % N) * s + s / 2, hy = by + Math.floor(pc.i / N) * s + s / 2;
       if (Math.abs(cx - hx) < s * 0.6 && Math.abs(cy - hy) < s * 0.6) setPlaced(pc);
       else place(pc);   // goes back to its waiting place
@@ -342,7 +355,7 @@
     let hintTimer = 0;
     function hint() {
       clearHint();
-      let pc = selected || pieces.find((q) => !q.placed);
+      const pc = selected || pieces.find((q) => !q.placed);
       if (!pc) return;
       if (!selected) select(pc);
       board.querySelector(`.cell[data-k="${pc.i}"]`).classList.add('hint');
