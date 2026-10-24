@@ -5,6 +5,7 @@
     "ja": "赤いボタンを押してください。",
     "en": "Red button (object) press please.",
     "before": "img/red-button/before.webp",
-    "after": "img/red-button/after.webp"
+    "after": "img/red-button/after.webp",
+    "audio": "img/red-button/ja.mp3"
   }
 ]

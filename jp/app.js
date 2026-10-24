@@ -1,7 +1,14 @@
 (async () => {
   const $ = id => document.getElementById(id);
   const slides = await (await fetch('slides.json', {cache: 'no-cache'})).json();
-  let i = 0, after = false;
+  let i = 0, after = false, shown = -1, unlocked = false;
+  const au = new Audio(); au.preload = 'auto';
+  function speak() {
+    const s = slides[i]; if (!s.audio) return;
+    if (!au.src.endsWith(s.audio)) au.src = s.audio;
+    au.currentTime = 0; au.play().then(() => { unlocked = true; }).catch(() => {});
+  }
+  addEventListener('pointerdown', e => { if (!unlocked) { unlocked = true; if (!$('speak').contains(e.target)) speak(); } }, {once: true, capture: true});
   const pre = src => { const im = new Image(); im.src = src; };
   function show() {
     const s = slides[i];
@@ -9,6 +16,8 @@
     $('pic').alt = s.ja;
     $('ja').textContent = s.ja;
     $('en').textContent = s.en || '';
+    $('speak').hidden = !s.audio;
+    if (shown !== i) { shown = i; speak(); }
     $('count').textContent = (i + 1) + ' / ' + slides.length;
     pre(s.after);
     if (slides[i + 1]) pre(slides[i + 1].before);
@@ -18,6 +27,7 @@
   $('frame').addEventListener('click', next);
   $('next').addEventListener('click', next);
   $('prev').addEventListener('click', prev);
+  $('speak').addEventListener('click', e => { e.stopPropagation(); unlocked = true; speak(); });
   $('toggle').addEventListener('click', () => { $('en').hidden = !$('en').hidden; });
   addEventListener('keydown', e => {
     if (['ArrowRight', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
