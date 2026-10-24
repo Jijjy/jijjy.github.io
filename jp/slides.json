@@ -1,0 +1,10 @@
+[
+  {
+    "id": "red-button",
+    "date": "2026-10-24",
+    "ja": "赤いボタンを押してください。",
+    "en": "Red button (object) press please.",
+    "before": "img/red-button/before.webp",
+    "after": "img/red-button/after.webp"
+  }
+]
