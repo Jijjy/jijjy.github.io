@@ -8,7 +8,6 @@
     if (!au.src.endsWith(s.audio)) au.src = s.audio;
     au.currentTime = 0; au.play().then(() => { unlocked = true; }).catch(() => {});
   }
-  addEventListener('pointerdown', e => { if (!unlocked) { unlocked = true; if (!$('speak').contains(e.target)) speak(); } }, {once: true, capture: true});
   const pre = src => { const im = new Image(); im.src = src; };
   function show() {
     const s = slides[i];
@@ -17,20 +16,26 @@
     $('ja').textContent = s.ja;
     $('en').textContent = s.en || '';
     $('speak').hidden = !s.audio;
-    if (shown !== i) { shown = i; speak(); }
+    if (shown !== i && unlocked) { shown = i; speak(); }
     $('count').textContent = (i + 1) + ' / ' + slides.length;
     pre(s.after);
     if (slides[i + 1]) pre(slides[i + 1].before);
   }
-  function next() { if (!after) after = true; else if (i < slides.length - 1) { i++; after = false; } show(); }
-  function prev() { if (after) after = false; else if (i > 0) { i--; after = true; } show(); }
+  let timer = null;
+  const clear = () => { clearTimeout(timer); timer = null; };
+  function advance() { clear(); if (i < slides.length - 1) { i++; after = false; show(); } }
+  function next() {
+    if (!after) { after = true; show(); clear(); timer = setTimeout(advance, 1000); }
+    else advance();
+  }
+  function prev() { clear(); if (after) after = false; else if (i > 0) { i--; after = true; } show(); }
   $('frame').addEventListener('click', next);
   $('next').addEventListener('click', next);
   $('prev').addEventListener('click', prev);
   $('speak').addEventListener('click', e => { e.stopPropagation(); unlocked = true; speak(); });
   $('toggle').addEventListener('click', () => { $('en').hidden = !$('en').hidden; });
   addEventListener('keydown', e => {
-    if (['ArrowRight', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    if (['ArrowRight', ' ', 'Enter'].includes(e.key)) { if ($('splash')) { $('splash').click(); e.preventDefault(); return; } e.preventDefault(); next(); }
     if (e.key === 'ArrowLeft') prev();
   });
   let x0 = null;
@@ -40,4 +45,7 @@
     if (Math.abs(dx) > 50) { e.preventDefault(); dx < 0 ? next() : prev(); }
   });
   show();
+  $('splash').addEventListener('click', e => {
+    e.stopPropagation(); unlocked = true; $('splash').remove(); shown = -1; show();
+  });
 })();
