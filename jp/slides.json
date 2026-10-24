@@ -1,5 +1,35 @@
 [
   {
+    "id": "robotaxi-lights",
+    "date": "2026-10-24",
+    "ja": "ライトをつけてください。",
+    "en": "Light (object) turn-on please.",
+    "before": "img/robotaxi-lights/before.webp",
+    "after": "img/robotaxi-lights/after.webp",
+    "audio": "img/robotaxi-lights/ja.mp3",
+    "source": "https://bbn.live/tech/archive/2026-10-24"
+  },
+  {
+    "id": "ballot-box",
+    "date": "2026-10-24",
+    "ja": "投票用紙を箱に入れてください。",
+    "en": "Ballot (object) into-box put please.",
+    "before": "img/ballot-box/before.webp",
+    "after": "img/ballot-box/after.webp",
+    "audio": "img/ballot-box/ja.mp3",
+    "source": "https://www.cnbc.com/2026/10/24/trump-ai-data-centers-voter-backlash-midterms.html"
+  },
+  {
+    "id": "starlink-dish",
+    "date": "2026-10-24",
+    "ja": "アンテナを立ててください。",
+    "en": "Antenna (object) stand-up please.",
+    "before": "img/starlink-dish/before.webp",
+    "after": "img/starlink-dish/after.webp",
+    "audio": "img/starlink-dish/ja.mp3",
+    "source": "https://www.npr.org/2026/10/24/nx-s1-6015482/ukraine-starlink-working-after-disruptions"
+  },
+  {
     "id": "red-button",
     "date": "2026-10-24",
     "ja": "赤いボタンを押してください。",
