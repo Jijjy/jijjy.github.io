@@ -172,7 +172,7 @@
     </div>
   </div>
 
-  <div class="overlay" id="win">
+  <div class="overlay tap" id="win">
     <div class="box">
       <div class="big">🎉</div>
       <h2>Well done!</h2>
@@ -304,8 +304,11 @@
       wheel.style.width = wheel.style.height = size + 'px';
       const n = order.length;
       const inner = size - 6;                     // less the border
-      letterR = inner * (n <= 5 ? 0.14 : 0.12);
-      const ring = inner / 2 - letterR - inner * 0.05;
+      // Big letters set close together: a small gap (gap × radius) between
+      // neighbours, and the ring kept inside the wheel.
+      const gap = 0.1, side = Math.sin(Math.PI / Math.max(n, 3));
+      letterR = inner * Math.min(0.19, 0.48 / (1 + (1 + gap) / side));
+      const ring = (letterR * (1 + gap)) / side;
       spots = order.map((_, i) => {
         const a = (i / n) * Math.PI * 2 - Math.PI / 2;
         return { x: inner / 2 + ring * Math.cos(a), y: inner / 2 + ring * Math.sin(a) };
@@ -314,7 +317,7 @@
         el.style.width = el.style.height = letterR * 2 + 'px';
         el.style.left = spots[i].x - letterR + 'px';
         el.style.top = spots[i].y - letterR + 'px';
-        el.style.fontSize = letterR * 1.1 + 'px';
+        el.style.fontSize = letterR * 1.35 + 'px';
       });
       $('line').setAttribute('stroke-width', letterR * 0.35);
       draw();
@@ -498,6 +501,8 @@
       $('win').classList.remove('show');
       start(level + 1);
     });
+    // Tap anywhere in the message to go on.
+    $('win').addEventListener('click', (e) => { if (!e.target.closest('button')) $('next').click(); });
     window.addEventListener('resize', layout);
 
     if (!load()) start(0);

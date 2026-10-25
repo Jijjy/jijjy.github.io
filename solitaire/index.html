@@ -111,7 +111,7 @@
 
   <div id="table"></div>
 
-  <div class="overlay" id="win">
+  <div class="overlay tap" id="win">
     <div class="box" style="color:var(--fg)">
       <div class="big">🎉</div>
       <h2>You won!</h2>
@@ -577,6 +577,8 @@
     $('new').addEventListener('click', () => $('confirm').classList.add('show'));
     $('cancel').addEventListener('click', hideOverlays);
     for (const b of document.querySelectorAll('[data-new]')) b.addEventListener('click', newGame);
+    // Tap anywhere in the message to go on.
+    $('win').addEventListener('click', (e) => { if (!e.target.closest('button')) $('win').querySelector('button').click(); });
     window.addEventListener('resize', render);
 
     if (load()) done(); else newGame();

@@ -87,6 +87,7 @@ body {
 }
 
 .overlay.show { display: flex; }
+.overlay.tap { cursor: pointer; }
 
 .overlay .box {
   background: var(--card);

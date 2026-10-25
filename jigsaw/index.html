@@ -104,7 +104,7 @@
     <div id="board"><div id="guide"></div></div>
   </div>
 
-  <div class="overlay" id="win">
+  <div class="overlay tap" id="win">
     <div class="box">
       <canvas id="winPic"></canvas>
       <h2>Well done!</h2>
@@ -427,6 +427,8 @@
     $('hint').addEventListener('click', hint);
     $('next').addEventListener('click', newPuzzle);
     $('again').addEventListener('click', newPuzzle);
+    // Tap anywhere in the message to go on.
+    $('win').addEventListener('click', (e) => { if (!e.target.closest('button')) $('again').click(); });
     window.addEventListener('resize', layout);
 
     newPuzzle();
