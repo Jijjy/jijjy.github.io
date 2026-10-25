@@ -172,7 +172,7 @@
     </div>
   </div>
 
-  <div class="overlay" id="win">
+  <div class="overlay tap" id="win">
     <div class="box">
       <div class="big">🎉</div>
       <h2>Well done!</h2>
@@ -498,6 +498,8 @@
       $('win').classList.remove('show');
       start(level + 1);
     });
+    // Tap anywhere in the message to go on.
+    $('win').addEventListener('click', (e) => { if (!e.target.closest('button')) $('next').click(); });
     window.addEventListener('resize', layout);
 
     if (!load()) start(0);
