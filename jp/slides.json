@@ -1,5 +1,35 @@
 [
   {
+    "id": "hard-hat",
+    "date": "2026-10-25",
+    "ja": "ヘルメットをかぶってください。",
+    "en": "Helmet (object) put-on-head please.",
+    "before": "img/hard-hat/before.webp",
+    "after": "img/hard-hat/after.webp",
+    "audio": "img/hard-hat/ja.mp3",
+    "source": "https://www.audi.com/en/press-releases/audi-to-establish-first-us-production-site-in-georgia-investing-4-billion-and-creating-4500-jobs-18420"
+  },
+  {
+    "id": "lan-cable",
+    "date": "2026-10-25",
+    "ja": "ケーブルを抜いてください。",
+    "en": "Cable (object) pull-out please.",
+    "before": "img/lan-cable/before.webp",
+    "after": "img/lan-cable/after.webp",
+    "audio": "img/lan-cable/ja.mp3",
+    "source": "https://toolsift.ai/news/2026-10-24/"
+  },
+  {
+    "id": "petrol-nozzle",
+    "date": "2026-10-25",
+    "ja": "ガソリンを入れてください。",
+    "en": "Petrol (object) put-in please.",
+    "before": "img/petrol-nozzle/before.webp",
+    "after": "img/petrol-nozzle/after.webp",
+    "audio": "img/petrol-nozzle/ja.mp3",
+    "source": "https://www.ajc.com/politics/2026/10/trump-republican-georgia-rally/"
+  },
+  {
     "id": "robotaxi-lights",
     "date": "2026-10-24",
     "ja": "ライトをつけてください。",
