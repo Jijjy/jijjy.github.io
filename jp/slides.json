@@ -1,5 +1,35 @@
 [
   {
+    "id": "pc-power-off",
+    "date": "2026-10-26",
+    "ja": "パソコンの電源を切ってください。",
+    "en": "Computer's power (object) cut please.",
+    "before": "img/pc-power-off/before.webp",
+    "after": "img/pc-power-off/after.webp",
+    "audio": "img/pc-power-off/ja.mp3",
+    "source": "https://yuphora.com/news/tech-news-roundup-2026-10-25"
+  },
+  {
+    "id": "open-bag",
+    "date": "2026-10-26",
+    "ja": "かばんを開けてください。",
+    "en": "Bag (object) open please.",
+    "before": "img/open-bag/before.webp",
+    "after": "img/open-bag/after.webp",
+    "audio": "img/open-bag/ja.mp3",
+    "source": "https://www.pbs.org/newshour/politics/trump-escalates-rhetoric-against-el-sayed-as-he-tries-to-undermine-democrat-in-michigan-senate-race"
+  },
+  {
+    "id": "fly-drone",
+    "date": "2026-10-26",
+    "ja": "ドローンを飛ばしてください。",
+    "en": "Drone (object) make-fly please.",
+    "before": "img/fly-drone/before.webp",
+    "after": "img/fly-drone/after.webp",
+    "audio": "img/fly-drone/ja.mp3",
+    "source": "https://applycoding.com/news/2026-10-25"
+  },
+  {
     "id": "hard-hat",
     "date": "2026-10-25",
     "ja": "ヘルメットをかぶってください。",
