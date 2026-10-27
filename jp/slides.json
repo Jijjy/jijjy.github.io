@@ -1,5 +1,35 @@
 [
   {
+    "id": "phone-crack",
+    "date": "2026-10-27",
+    "ja": "スマホの画面が割れた。",
+    "en": "Smartphone's screen (subject) cracked.",
+    "before": "img/phone-crack/before.webp",
+    "after": "img/phone-crack/after.webp",
+    "audio": "img/phone-crack/ja.mp3",
+    "source": "https://www.cnbc.com/technology/"
+  },
+  {
+    "id": "raise-hand",
+    "date": "2026-10-27",
+    "ja": "男が手を上げた。",
+    "en": "Man (subject) hand (object) raised.",
+    "before": "img/raise-hand/before.webp",
+    "after": "img/raise-hand/after.webp",
+    "audio": "img/raise-hand/ja.mp3",
+    "source": "https://apnews.com/live/trump-midterm-elections-news-updates-10-26-2026"
+  },
+  {
+    "id": "clear-desk",
+    "date": "2026-10-27",
+    "ja": "男が机を片付けた。",
+    "en": "Man (subject) desk (object) cleared-away.",
+    "before": "img/clear-desk/before.webp",
+    "after": "img/clear-desk/after.webp",
+    "audio": "img/clear-desk/ja.mp3",
+    "source": "https://frontscoop.com/2026/10/26/"
+  },
+  {
     "id": "pc-power-off",
     "date": "2026-10-26",
     "ja": "パソコンの電源を切ってください。",
