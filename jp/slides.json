@@ -1,5 +1,35 @@
 [
   {
+    "id": "eat-onigiri",
+    "date": "2026-10-28",
+    "ja": "男がおにぎりを食べた。",
+    "en": "Man (subject) rice-ball (object) ate.",
+    "before": "img/eat-onigiri/before.webp",
+    "after": "img/eat-onigiri/after.webp",
+    "audio": "img/eat-onigiri/ja.mp3",
+    "source": "tokyo_stories_freq #24 食べる"
+  },
+  {
+    "id": "throw-trash",
+    "date": "2026-10-28",
+    "ja": "男がごみを捨てた。",
+    "en": "Man (subject) rubbish (object) threw-away.",
+    "before": "img/throw-trash/before.webp",
+    "after": "img/throw-trash/after.webp",
+    "audio": "img/throw-trash/ja.mp3",
+    "source": "tokyo_stories_freq #148 捨てる"
+  },
+  {
+    "id": "shop-close",
+    "date": "2026-10-28",
+    "ja": "店が閉まった。",
+    "en": "Shop (subject) closed.",
+    "before": "img/shop-close/before.webp",
+    "after": "img/shop-close/after.webp",
+    "audio": "img/shop-close/ja.mp3",
+    "source": "tokyo_stories_freq #93 店"
+  },
+  {
     "id": "phone-crack",
     "date": "2026-10-27",
     "ja": "スマホの画面が割れた。",
