@@ -1,5 +1,35 @@
 [
   {
+    "id": "buy-bread",
+    "date": "2026-10-29",
+    "ja": "女がパンを買った。",
+    "en": "Woman bread bought.",
+    "before": "img/buy-bread/before.webp",
+    "after": "img/buy-bread/after.webp",
+    "audio": "img/buy-bread/ja.mp3",
+    "source": "tokyo_stories_freq #116 買う"
+  },
+  {
+    "id": "make-cake",
+    "date": "2026-10-29",
+    "ja": "男がケーキを作った。",
+    "en": "Man cake made.",
+    "before": "img/make-cake/before.webp",
+    "after": "img/make-cake/after.webp",
+    "audio": "img/make-cake/ja.mp3",
+    "source": "tokyo_stories_freq #76 作る"
+  },
+  {
+    "id": "wear-coat",
+    "date": "2026-10-29",
+    "ja": "女がコートを着た。",
+    "en": "Woman coat put-on.",
+    "before": "img/wear-coat/before.webp",
+    "after": "img/wear-coat/after.webp",
+    "audio": "img/wear-coat/ja.mp3",
+    "source": "tokyo_stories_freq #367 着る"
+  },
+  {
     "id": "eat-onigiri",
     "date": "2026-10-28",
     "ja": "男がおにぎりを食べた。",
