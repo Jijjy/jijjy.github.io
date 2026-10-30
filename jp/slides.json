@@ -1,5 +1,35 @@
 [
   {
+    "id": "drink-water",
+    "date": "2026-10-30",
+    "ja": "男が水を飲んだ。",
+    "en": "Man water drank.",
+    "before": "img/drink-water/before.webp",
+    "after": "img/drink-water/after.webp",
+    "audio": "img/drink-water/ja.mp3",
+    "source": "tokyo_stories_freq #80 飲む"
+  },
+  {
+    "id": "sit-chair",
+    "date": "2026-10-30",
+    "ja": "女が椅子に座った。",
+    "en": "Woman chair-on sat.",
+    "before": "img/sit-chair/before.webp",
+    "after": "img/sit-chair/after.webp",
+    "audio": "img/sit-chair/ja.mp3",
+    "source": "tokyo_stories_freq #341 座る"
+  },
+  {
+    "id": "open-window",
+    "date": "2026-10-30",
+    "ja": "男が窓を開けた。",
+    "en": "Man window opened.",
+    "before": "img/open-window/before.webp",
+    "after": "img/open-window/after.webp",
+    "audio": "img/open-window/ja.mp3",
+    "source": "tokyo_stories_freq #245 開ける"
+  },
+  {
     "id": "buy-bread",
     "date": "2026-10-29",
     "ja": "女がパンを買った。",
