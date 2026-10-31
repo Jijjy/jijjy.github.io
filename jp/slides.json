@@ -1,5 +1,35 @@
 [
   {
+    "id": "sleep-bed",
+    "date": "2026-10-31",
+    "ja": "男がベッドで寝た。",
+    "en": "The man, in bed, slept.",
+    "before": "img/sleep-bed/before.webp",
+    "after": "img/sleep-bed/after.webp",
+    "audio": "img/sleep-bed/ja.mp3",
+    "source": "tokyo_stories_freq #227 寝る"
+  },
+  {
+    "id": "write-letter",
+    "date": "2026-10-31",
+    "ja": "女が手紙を書いた。",
+    "en": "The woman a letter wrote.",
+    "before": "img/write-letter/before.webp",
+    "after": "img/write-letter/after.webp",
+    "audio": "img/write-letter/ja.mp3",
+    "source": "tokyo_stories_freq #233 書く"
+  },
+  {
+    "id": "crack-egg",
+    "date": "2026-10-31",
+    "ja": "男が卵を割った。",
+    "en": "The man an egg cracked.",
+    "before": "img/crack-egg/before.webp",
+    "after": "img/crack-egg/after.webp",
+    "audio": "img/crack-egg/ja.mp3",
+    "source": "tokyo_stories_freq #330 卵"
+  },
+  {
     "id": "drink-water",
     "date": "2026-10-30",
     "ja": "男が水を飲んだ。",
