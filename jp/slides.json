@@ -1,5 +1,35 @@
 [
  {
+  "id": "knit-scarf",
+  "date": "2026-11-02",
+  "ja": "女がマフラーを編んだ。",
+  "en": "Woman scarf knitted.",
+  "before": "img/knit-scarf/before.webp",
+  "after": "img/knit-scarf/after.webp",
+  "audio": "img/knit-scarf/ja.mp3",
+  "source": "tokyo_stories_freq #115 編む"
+ },
+ {
+  "id": "umeboshi-rice",
+  "date": "2026-11-02",
+  "ja": "男がご飯に梅干しをのせた。",
+  "en": "Man rice-onto umeboshi placed.",
+  "before": "img/umeboshi-rice/before.webp",
+  "after": "img/umeboshi-rice/after.webp",
+  "audio": "img/umeboshi-rice/ja.mp3",
+  "source": "tokyo_stories_freq #235 梅干し"
+ },
+ {
+  "id": "open-umbrella",
+  "date": "2026-11-02",
+  "ja": "女が傘を開いた。",
+  "en": "Woman umbrella opened.",
+  "before": "img/open-umbrella/before.webp",
+  "after": "img/open-umbrella/after.webp",
+  "audio": "img/open-umbrella/ja.mp3",
+  "source": "tokyo_stories_freq #296 開く"
+ },
+ {
   "id": "put-apple-box",
   "date": "2026-11-01",
   "ja": "女が箱にりんごを入れた。",
