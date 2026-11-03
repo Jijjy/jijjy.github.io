@@ -1,5 +1,35 @@
 [
  {
+  "id": "hold-bag",
+  "date": "2026-11-03",
+  "ja": "女がかばんを持った。",
+  "en": "Woman (subj) bag (obj) held.",
+  "before": "img/hold-bag/before.webp",
+  "after": "img/hold-bag/after.webp",
+  "audio": "img/hold-bag/ja.mp3",
+  "source": "tokyo_stories_freq #69 持つ"
+ },
+ {
+  "id": "milk-fridge",
+  "date": "2026-11-03",
+  "ja": "男が冷蔵庫から牛乳を出した。",
+  "en": "Man (subj) fridge from milk (obj) took out.",
+  "before": "img/milk-fridge/before.webp",
+  "after": "img/milk-fridge/after.webp",
+  "audio": "img/milk-fridge/ja.mp3",
+  "source": "tokyo_stories_freq #144 出す"
+ },
+ {
+  "id": "salt-tomato",
+  "date": "2026-11-03",
+  "ja": "男がトマトに塩をかけた。",
+  "en": "Man (subj) tomato on salt (obj) sprinkled.",
+  "before": "img/salt-tomato/before.webp",
+  "after": "img/salt-tomato/after.webp",
+  "audio": "img/salt-tomato/ja.mp3",
+  "source": "tokyo_stories_freq #445 塩"
+ },
+ {
   "id": "knit-scarf",
   "date": "2026-11-02",
   "ja": "女がマフラーを編んだ。",
