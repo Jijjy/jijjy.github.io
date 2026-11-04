@@ -1,5 +1,35 @@
 [
  {
+  "id": "light-on",
+  "date": "2026-11-04",
+  "ja": "男が電気をつけた。",
+  "en": "The man the light switched on.",
+  "before": "img/light-on/before.webp",
+  "after": "img/light-on/after.webp",
+  "audio": "img/light-on/ja.mp3",
+  "source": "tokyo_stories_freq #308 つける"
+ },
+ {
+  "id": "make-sushi",
+  "date": "2026-11-04",
+  "ja": "男が寿司を握った。",
+  "en": "The man sushi pressed.",
+  "before": "img/make-sushi/before.webp",
+  "after": "img/make-sushi/after.webp",
+  "audio": "img/make-sushi/ja.mp3",
+  "source": "tokyo_stories_freq #457 寿司"
+ },
+ {
+  "id": "umeshu-glass",
+  "date": "2026-11-04",
+  "ja": "女がグラスに梅酒を注いだ。",
+  "en": "The woman into the glass plum wine poured.",
+  "before": "img/umeshu-glass/before.webp",
+  "after": "img/umeshu-glass/after.webp",
+  "audio": "img/umeshu-glass/ja.mp3",
+  "source": "tokyo_stories_freq #283 梅酒"
+ },
+ {
   "id": "hold-bag",
   "date": "2026-11-03",
   "ja": "女がかばんを持った。",
