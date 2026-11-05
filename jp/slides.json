@@ -1,371 +1,401 @@
 [
- {
-  "id": "light-on",
-  "date": "2026-11-04",
-  "ja": "男が電気をつけた。",
-  "en": "The man the light switched on.",
-  "before": "img/light-on/before.webp",
-  "after": "img/light-on/after.webp",
-  "audio": "img/light-on/ja.mp3",
-  "source": "tokyo_stories_freq #308 つける"
- },
- {
-  "id": "make-sushi",
-  "date": "2026-11-04",
-  "ja": "男が寿司を握った。",
-  "en": "The man sushi pressed.",
-  "before": "img/make-sushi/before.webp",
-  "after": "img/make-sushi/after.webp",
-  "audio": "img/make-sushi/ja.mp3",
-  "source": "tokyo_stories_freq #457 寿司"
- },
- {
-  "id": "umeshu-glass",
-  "date": "2026-11-04",
-  "ja": "女がグラスに梅酒を注いだ。",
-  "en": "The woman into the glass plum wine poured.",
-  "before": "img/umeshu-glass/before.webp",
-  "after": "img/umeshu-glass/after.webp",
-  "audio": "img/umeshu-glass/ja.mp3",
-  "source": "tokyo_stories_freq #283 梅酒"
- },
- {
-  "id": "hold-bag",
-  "date": "2026-11-03",
-  "ja": "女がかばんを持った。",
-  "en": "Woman (subj) bag (obj) held.",
-  "before": "img/hold-bag/before.webp",
-  "after": "img/hold-bag/after.webp",
-  "audio": "img/hold-bag/ja.mp3",
-  "source": "tokyo_stories_freq #69 持つ"
- },
- {
-  "id": "milk-fridge",
-  "date": "2026-11-03",
-  "ja": "男が冷蔵庫から牛乳を出した。",
-  "en": "Man (subj) fridge from milk (obj) took out.",
-  "before": "img/milk-fridge/before.webp",
-  "after": "img/milk-fridge/after.webp",
-  "audio": "img/milk-fridge/ja.mp3",
-  "source": "tokyo_stories_freq #144 出す"
- },
- {
-  "id": "salt-tomato",
-  "date": "2026-11-03",
-  "ja": "男がトマトに塩をかけた。",
-  "en": "Man (subj) tomato on salt (obj) sprinkled.",
-  "before": "img/salt-tomato/before.webp",
-  "after": "img/salt-tomato/after.webp",
-  "audio": "img/salt-tomato/ja.mp3",
-  "source": "tokyo_stories_freq #445 塩"
- },
- {
-  "id": "knit-scarf",
-  "date": "2026-11-02",
-  "ja": "女がマフラーを編んだ。",
-  "en": "Woman scarf knitted.",
-  "before": "img/knit-scarf/before.webp",
-  "after": "img/knit-scarf/after.webp",
-  "audio": "img/knit-scarf/ja.mp3",
-  "source": "tokyo_stories_freq #115 編む"
- },
- {
-  "id": "umeboshi-rice",
-  "date": "2026-11-02",
-  "ja": "男がご飯に梅干しをのせた。",
-  "en": "Man rice-onto umeboshi placed.",
-  "before": "img/umeboshi-rice/before.webp",
-  "after": "img/umeboshi-rice/after.webp",
-  "audio": "img/umeboshi-rice/ja.mp3",
-  "source": "tokyo_stories_freq #235 梅干し"
- },
- {
-  "id": "open-umbrella",
-  "date": "2026-11-02",
-  "ja": "女が傘を開いた。",
-  "en": "Woman umbrella opened.",
-  "before": "img/open-umbrella/before.webp",
-  "after": "img/open-umbrella/after.webp",
-  "audio": "img/open-umbrella/ja.mp3",
-  "source": "tokyo_stories_freq #296 開く"
- },
- {
-  "id": "put-apple-box",
-  "date": "2026-11-01",
-  "ja": "女が箱にりんごを入れた。",
-  "en": "Woman box-into apple put-in.",
-  "before": "img/put-apple-box/before.webp",
-  "after": "img/put-apple-box/after.webp",
-  "audio": "img/put-apple-box/ja.mp3",
-  "source": "tokyo_stories_freq #325 入れる"
- },
- {
-  "id": "pot-boil",
-  "date": "2026-11-01",
-  "ja": "鍋のお湯が沸いた。",
-  "en": "Pot's hot-water boiled.",
-  "before": "img/pot-boil/before.webp",
-  "after": "img/pot-boil/after.webp",
-  "audio": "img/pot-boil/ja.mp3",
-  "source": "tokyo_stories_freq #206 鍋"
- },
- {
-  "id": "ride-bike",
-  "date": "2026-11-01",
-  "ja": "男が自転車に乗った。",
-  "en": "Man bicycle-onto got-on.",
-  "before": "img/ride-bike/before.webp",
-  "after": "img/ride-bike/after.webp",
-  "audio": "img/ride-bike/ja.mp3",
-  "source": "tokyo_stories_freq #418 乗る"
- },
- {
-  "id": "sleep-bed",
-  "date": "2026-10-31",
-  "ja": "男がベッドで寝た。",
-  "en": "Man bed-in slept.",
-  "before": "img/sleep-bed/before.webp",
-  "after": "img/sleep-bed/after.webp",
-  "audio": "img/sleep-bed/ja.mp3",
-  "source": "tokyo_stories_freq #227 寝る"
- },
- {
-  "id": "write-letter",
-  "date": "2026-10-31",
-  "ja": "女が手紙を書いた。",
-  "en": "Woman letter wrote.",
-  "before": "img/write-letter/before.webp",
-  "after": "img/write-letter/after.webp",
-  "audio": "img/write-letter/ja.mp3",
-  "source": "tokyo_stories_freq #233 書く"
- },
- {
-  "id": "crack-egg",
-  "date": "2026-10-31",
-  "ja": "男が卵を割った。",
-  "en": "Man egg cracked.",
-  "before": "img/crack-egg/before.webp",
-  "after": "img/crack-egg/after.webp",
-  "audio": "img/crack-egg/ja.mp3",
-  "source": "tokyo_stories_freq #330 卵"
- },
- {
-  "id": "drink-water",
-  "date": "2026-10-30",
-  "ja": "男が水を飲んだ。",
-  "en": "Man water drank.",
-  "before": "img/drink-water/before.webp",
-  "after": "img/drink-water/after.webp",
-  "audio": "img/drink-water/ja.mp3",
-  "source": "tokyo_stories_freq #80 飲む"
- },
- {
-  "id": "sit-chair",
-  "date": "2026-10-30",
-  "ja": "女が椅子に座った。",
-  "en": "Woman chair-on sat.",
-  "before": "img/sit-chair/before.webp",
-  "after": "img/sit-chair/after.webp",
-  "audio": "img/sit-chair/ja.mp3",
-  "source": "tokyo_stories_freq #341 座る"
- },
- {
-  "id": "open-window",
-  "date": "2026-10-30",
-  "ja": "男が窓を開けた。",
-  "en": "Man window opened.",
-  "before": "img/open-window/before.webp",
-  "after": "img/open-window/after.webp",
-  "audio": "img/open-window/ja.mp3",
-  "source": "tokyo_stories_freq #245 開ける"
- },
- {
-  "id": "buy-bread",
-  "date": "2026-10-29",
-  "ja": "女がパンを買った。",
-  "en": "Woman bread bought.",
-  "before": "img/buy-bread/before.webp",
-  "after": "img/buy-bread/after.webp",
-  "audio": "img/buy-bread/ja.mp3",
-  "source": "tokyo_stories_freq #116 買う"
- },
- {
-  "id": "make-cake",
-  "date": "2026-10-29",
-  "ja": "男がケーキを作った。",
-  "en": "Man cake made.",
-  "before": "img/make-cake/before.webp",
-  "after": "img/make-cake/after.webp",
-  "audio": "img/make-cake/ja.mp3",
-  "source": "tokyo_stories_freq #76 作る"
- },
- {
-  "id": "wear-coat",
-  "date": "2026-10-29",
-  "ja": "女がコートを着た。",
-  "en": "Woman coat put-on.",
-  "before": "img/wear-coat/before.webp",
-  "after": "img/wear-coat/after.webp",
-  "audio": "img/wear-coat/ja.mp3",
-  "source": "tokyo_stories_freq #367 着る"
- },
- {
-  "id": "eat-onigiri",
-  "date": "2026-10-28",
-  "ja": "男がおにぎりを食べた。",
-  "en": "Man (subject) rice-ball (object) ate.",
-  "before": "img/eat-onigiri/before.webp",
-  "after": "img/eat-onigiri/after.webp",
-  "audio": "img/eat-onigiri/ja.mp3",
-  "source": "tokyo_stories_freq #24 食べる"
- },
- {
-  "id": "throw-trash",
-  "date": "2026-10-28",
-  "ja": "男がごみを捨てた。",
-  "en": "Man (subject) rubbish (object) threw-away.",
-  "before": "img/throw-trash/before.webp",
-  "after": "img/throw-trash/after.webp",
-  "audio": "img/throw-trash/ja.mp3",
-  "source": "tokyo_stories_freq #148 捨てる"
- },
- {
-  "id": "shop-close",
-  "date": "2026-10-28",
-  "ja": "店が閉まった。",
-  "en": "Shop (subject) closed.",
-  "before": "img/shop-close/before.webp",
-  "after": "img/shop-close/after.webp",
-  "audio": "img/shop-close/ja.mp3",
-  "source": "tokyo_stories_freq #93 店"
- },
- {
-  "id": "phone-crack",
-  "date": "2026-10-27",
-  "ja": "スマホの画面が割れた。",
-  "en": "Smartphone's screen (subject) cracked.",
-  "before": "img/phone-crack/before.webp",
-  "after": "img/phone-crack/after.webp",
-  "audio": "img/phone-crack/ja.mp3",
-  "source": "https://www.cnbc.com/technology/"
- },
- {
-  "id": "raise-hand",
-  "date": "2026-10-27",
-  "ja": "男が手を上げた。",
-  "en": "Man (subject) hand (object) raised.",
-  "before": "img/raise-hand/before.webp",
-  "after": "img/raise-hand/after.webp",
-  "audio": "img/raise-hand/ja.mp3",
-  "source": "https://apnews.com/live/trump-midterm-elections-news-updates-10-26-2026"
- },
- {
-  "id": "clear-desk",
-  "date": "2026-10-27",
-  "ja": "男が机を片付けた。",
-  "en": "Man (subject) desk (object) cleared-away.",
-  "before": "img/clear-desk/before.webp",
-  "after": "img/clear-desk/after.webp",
-  "audio": "img/clear-desk/ja.mp3",
-  "source": "https://frontscoop.com/2026/10/26/"
- },
- {
-  "id": "pc-power-off",
-  "date": "2026-10-26",
-  "ja": "パソコンの電源を切ってください。",
-  "en": "Computer's power (object) cut please.",
-  "before": "img/pc-power-off/before.webp",
-  "after": "img/pc-power-off/after.webp",
-  "audio": "img/pc-power-off/ja.mp3",
-  "source": "https://yuphora.com/news/tech-news-roundup-2026-10-25"
- },
- {
-  "id": "open-bag",
-  "date": "2026-10-26",
-  "ja": "かばんを開けてください。",
-  "en": "Bag (object) open please.",
-  "before": "img/open-bag/before.webp",
-  "after": "img/open-bag/after.webp",
-  "audio": "img/open-bag/ja.mp3",
-  "source": "https://www.pbs.org/newshour/politics/trump-escalates-rhetoric-against-el-sayed-as-he-tries-to-undermine-democrat-in-michigan-senate-race"
- },
- {
-  "id": "fly-drone",
-  "date": "2026-10-26",
-  "ja": "ドローンを飛ばしてください。",
-  "en": "Drone (object) make-fly please.",
-  "before": "img/fly-drone/before.webp",
-  "after": "img/fly-drone/after.webp",
-  "audio": "img/fly-drone/ja.mp3",
-  "source": "https://applycoding.com/news/2026-10-25"
- },
- {
-  "id": "hard-hat",
-  "date": "2026-10-25",
-  "ja": "ヘルメットをかぶってください。",
-  "en": "Helmet (object) put-on-head please.",
-  "before": "img/hard-hat/before.webp",
-  "after": "img/hard-hat/after.webp",
-  "audio": "img/hard-hat/ja.mp3",
-  "source": "https://www.audi.com/en/press-releases/audi-to-establish-first-us-production-site-in-georgia-investing-4-billion-and-creating-4500-jobs-18420"
- },
- {
-  "id": "lan-cable",
-  "date": "2026-10-25",
-  "ja": "ケーブルを抜いてください。",
-  "en": "Cable (object) pull-out please.",
-  "before": "img/lan-cable/before.webp",
-  "after": "img/lan-cable/after.webp",
-  "audio": "img/lan-cable/ja.mp3",
-  "source": "https://toolsift.ai/news/2026-10-24/"
- },
- {
-  "id": "petrol-nozzle",
-  "date": "2026-10-25",
-  "ja": "ガソリンを入れてください。",
-  "en": "Petrol (object) put-in please.",
-  "before": "img/petrol-nozzle/before.webp",
-  "after": "img/petrol-nozzle/after.webp",
-  "audio": "img/petrol-nozzle/ja.mp3",
-  "source": "https://www.ajc.com/politics/2026/10/trump-republican-georgia-rally/"
- },
- {
-  "id": "robotaxi-lights",
-  "date": "2026-10-24",
-  "ja": "ライトをつけてください。",
-  "en": "Light (object) turn-on please.",
-  "before": "img/robotaxi-lights/before.webp",
-  "after": "img/robotaxi-lights/after.webp",
-  "audio": "img/robotaxi-lights/ja.mp3",
-  "source": "https://bbn.live/tech/archive/2026-10-24"
- },
- {
-  "id": "ballot-box",
-  "date": "2026-10-24",
-  "ja": "投票用紙を箱に入れてください。",
-  "en": "Ballot (object) into-box put please.",
-  "before": "img/ballot-box/before.webp",
-  "after": "img/ballot-box/after.webp",
-  "audio": "img/ballot-box/ja.mp3",
-  "source": "https://www.cnbc.com/2026/10/24/trump-ai-data-centers-voter-backlash-midterms.html"
- },
- {
-  "id": "starlink-dish",
-  "date": "2026-10-24",
-  "ja": "アンテナを立ててください。",
-  "en": "Antenna (object) stand-up please.",
-  "before": "img/starlink-dish/before.webp",
-  "after": "img/starlink-dish/after.webp",
-  "audio": "img/starlink-dish/ja.mp3",
-  "source": "https://www.npr.org/2026/10/24/nx-s1-6015482/ukraine-starlink-working-after-disruptions"
- },
- {
-  "id": "red-button",
-  "date": "2026-10-24",
-  "ja": "赤いボタンを押してください。",
-  "en": "Red button (object) press please.",
-  "before": "img/red-button/before.webp",
-  "after": "img/red-button/after.webp",
-  "audio": "img/red-button/ja.mp3"
- }
+  {
+    "id": "eat-noodles",
+    "date": "2026-11-05",
+    "ja": "男が麺を食べた。",
+    "en": "The man the noodles ate.",
+    "before": "img/eat-noodles/before.webp",
+    "after": "img/eat-noodles/after.webp",
+    "audio": "img/eat-noodles/ja.mp3",
+    "source": "tokyo_stories_freq #117 麺"
+  },
+  {
+    "id": "place-vase",
+    "date": "2026-11-05",
+    "ja": "女がテーブルに花瓶を置いた。",
+    "en": "The woman on the table the vase put.",
+    "before": "img/place-vase/before.webp",
+    "after": "img/place-vase/after.webp",
+    "audio": "img/place-vase/ja.mp3",
+    "source": "tokyo_stories_freq #372 置く"
+  },
+  {
+    "id": "hand-flowers",
+    "date": "2026-11-05",
+    "ja": "男が女に花を渡した。",
+    "en": "The man to the woman the flowers handed.",
+    "before": "img/hand-flowers/before.webp",
+    "after": "img/hand-flowers/after.webp",
+    "audio": "img/hand-flowers/ja.mp3",
+    "source": "tokyo_stories_freq #497 渡す"
+  },
+  {
+    "id": "light-on",
+    "date": "2026-11-04",
+    "ja": "男が電気をつけた。",
+    "en": "The man the light switched on.",
+    "before": "img/light-on/before.webp",
+    "after": "img/light-on/after.webp",
+    "audio": "img/light-on/ja.mp3",
+    "source": "tokyo_stories_freq #308 つける"
+  },
+  {
+    "id": "make-sushi",
+    "date": "2026-11-04",
+    "ja": "男が寿司を握った。",
+    "en": "The man sushi pressed.",
+    "before": "img/make-sushi/before.webp",
+    "after": "img/make-sushi/after.webp",
+    "audio": "img/make-sushi/ja.mp3",
+    "source": "tokyo_stories_freq #457 寿司"
+  },
+  {
+    "id": "umeshu-glass",
+    "date": "2026-11-04",
+    "ja": "女がグラスに梅酒を注いだ。",
+    "en": "The woman into the glass plum wine poured.",
+    "before": "img/umeshu-glass/before.webp",
+    "after": "img/umeshu-glass/after.webp",
+    "audio": "img/umeshu-glass/ja.mp3",
+    "source": "tokyo_stories_freq #283 梅酒"
+  },
+  {
+    "id": "hold-bag",
+    "date": "2026-11-03",
+    "ja": "女がかばんを持った。",
+    "en": "Woman (subj) bag (obj) held.",
+    "before": "img/hold-bag/before.webp",
+    "after": "img/hold-bag/after.webp",
+    "audio": "img/hold-bag/ja.mp3",
+    "source": "tokyo_stories_freq #69 持つ"
+  },
+  {
+    "id": "milk-fridge",
+    "date": "2026-11-03",
+    "ja": "男が冷蔵庫から牛乳を出した。",
+    "en": "Man (subj) fridge from milk (obj) took out.",
+    "before": "img/milk-fridge/before.webp",
+    "after": "img/milk-fridge/after.webp",
+    "audio": "img/milk-fridge/ja.mp3",
+    "source": "tokyo_stories_freq #144 出す"
+  },
+  {
+    "id": "salt-tomato",
+    "date": "2026-11-03",
+    "ja": "男がトマトに塩をかけた。",
+    "en": "Man (subj) tomato on salt (obj) sprinkled.",
+    "before": "img/salt-tomato/before.webp",
+    "after": "img/salt-tomato/after.webp",
+    "audio": "img/salt-tomato/ja.mp3",
+    "source": "tokyo_stories_freq #445 塩"
+  },
+  {
+    "id": "knit-scarf",
+    "date": "2026-11-02",
+    "ja": "女がマフラーを編んだ。",
+    "en": "Woman scarf knitted.",
+    "before": "img/knit-scarf/before.webp",
+    "after": "img/knit-scarf/after.webp",
+    "audio": "img/knit-scarf/ja.mp3",
+    "source": "tokyo_stories_freq #115 編む"
+  },
+  {
+    "id": "umeboshi-rice",
+    "date": "2026-11-02",
+    "ja": "男がご飯に梅干しをのせた。",
+    "en": "Man rice-onto umeboshi placed.",
+    "before": "img/umeboshi-rice/before.webp",
+    "after": "img/umeboshi-rice/after.webp",
+    "audio": "img/umeboshi-rice/ja.mp3",
+    "source": "tokyo_stories_freq #235 梅干し"
+  },
+  {
+    "id": "open-umbrella",
+    "date": "2026-11-02",
+    "ja": "女が傘を開いた。",
+    "en": "Woman umbrella opened.",
+    "before": "img/open-umbrella/before.webp",
+    "after": "img/open-umbrella/after.webp",
+    "audio": "img/open-umbrella/ja.mp3",
+    "source": "tokyo_stories_freq #296 開く"
+  },
+  {
+    "id": "put-apple-box",
+    "date": "2026-11-01",
+    "ja": "女が箱にりんごを入れた。",
+    "en": "Woman box-into apple put-in.",
+    "before": "img/put-apple-box/before.webp",
+    "after": "img/put-apple-box/after.webp",
+    "audio": "img/put-apple-box/ja.mp3",
+    "source": "tokyo_stories_freq #325 入れる"
+  },
+  {
+    "id": "pot-boil",
+    "date": "2026-11-01",
+    "ja": "鍋のお湯が沸いた。",
+    "en": "Pot's hot-water boiled.",
+    "before": "img/pot-boil/before.webp",
+    "after": "img/pot-boil/after.webp",
+    "audio": "img/pot-boil/ja.mp3",
+    "source": "tokyo_stories_freq #206 鍋"
+  },
+  {
+    "id": "ride-bike",
+    "date": "2026-11-01",
+    "ja": "男が自転車に乗った。",
+    "en": "Man bicycle-onto got-on.",
+    "before": "img/ride-bike/before.webp",
+    "after": "img/ride-bike/after.webp",
+    "audio": "img/ride-bike/ja.mp3",
+    "source": "tokyo_stories_freq #418 乗る"
+  },
+  {
+    "id": "sleep-bed",
+    "date": "2026-10-31",
+    "ja": "男がベッドで寝た。",
+    "en": "Man bed-in slept.",
+    "before": "img/sleep-bed/before.webp",
+    "after": "img/sleep-bed/after.webp",
+    "audio": "img/sleep-bed/ja.mp3",
+    "source": "tokyo_stories_freq #227 寝る"
+  },
+  {
+    "id": "write-letter",
+    "date": "2026-10-31",
+    "ja": "女が手紙を書いた。",
+    "en": "Woman letter wrote.",
+    "before": "img/write-letter/before.webp",
+    "after": "img/write-letter/after.webp",
+    "audio": "img/write-letter/ja.mp3",
+    "source": "tokyo_stories_freq #233 書く"
+  },
+  {
+    "id": "crack-egg",
+    "date": "2026-10-31",
+    "ja": "男が卵を割った。",
+    "en": "Man egg cracked.",
+    "before": "img/crack-egg/before.webp",
+    "after": "img/crack-egg/after.webp",
+    "audio": "img/crack-egg/ja.mp3",
+    "source": "tokyo_stories_freq #330 卵"
+  },
+  {
+    "id": "drink-water",
+    "date": "2026-10-30",
+    "ja": "男が水を飲んだ。",
+    "en": "Man water drank.",
+    "before": "img/drink-water/before.webp",
+    "after": "img/drink-water/after.webp",
+    "audio": "img/drink-water/ja.mp3",
+    "source": "tokyo_stories_freq #80 飲む"
+  },
+  {
+    "id": "sit-chair",
+    "date": "2026-10-30",
+    "ja": "女が椅子に座った。",
+    "en": "Woman chair-on sat.",
+    "before": "img/sit-chair/before.webp",
+    "after": "img/sit-chair/after.webp",
+    "audio": "img/sit-chair/ja.mp3",
+    "source": "tokyo_stories_freq #341 座る"
+  },
+  {
+    "id": "open-window",
+    "date": "2026-10-30",
+    "ja": "男が窓を開けた。",
+    "en": "Man window opened.",
+    "before": "img/open-window/before.webp",
+    "after": "img/open-window/after.webp",
+    "audio": "img/open-window/ja.mp3",
+    "source": "tokyo_stories_freq #245 開ける"
+  },
+  {
+    "id": "buy-bread",
+    "date": "2026-10-29",
+    "ja": "女がパンを買った。",
+    "en": "Woman bread bought.",
+    "before": "img/buy-bread/before.webp",
+    "after": "img/buy-bread/after.webp",
+    "audio": "img/buy-bread/ja.mp3",
+    "source": "tokyo_stories_freq #116 買う"
+  },
+  {
+    "id": "make-cake",
+    "date": "2026-10-29",
+    "ja": "男がケーキを作った。",
+    "en": "Man cake made.",
+    "before": "img/make-cake/before.webp",
+    "after": "img/make-cake/after.webp",
+    "audio": "img/make-cake/ja.mp3",
+    "source": "tokyo_stories_freq #76 作る"
+  },
+  {
+    "id": "wear-coat",
+    "date": "2026-10-29",
+    "ja": "女がコートを着た。",
+    "en": "Woman coat put-on.",
+    "before": "img/wear-coat/before.webp",
+    "after": "img/wear-coat/after.webp",
+    "audio": "img/wear-coat/ja.mp3",
+    "source": "tokyo_stories_freq #367 着る"
+  },
+  {
+    "id": "eat-onigiri",
+    "date": "2026-10-28",
+    "ja": "男がおにぎりを食べた。",
+    "en": "Man (subject) rice-ball (object) ate.",
+    "before": "img/eat-onigiri/before.webp",
+    "after": "img/eat-onigiri/after.webp",
+    "audio": "img/eat-onigiri/ja.mp3",
+    "source": "tokyo_stories_freq #24 食べる"
+  },
+  {
+    "id": "throw-trash",
+    "date": "2026-10-28",
+    "ja": "男がごみを捨てた。",
+    "en": "Man (subject) rubbish (object) threw-away.",
+    "before": "img/throw-trash/before.webp",
+    "after": "img/throw-trash/after.webp",
+    "audio": "img/throw-trash/ja.mp3",
+    "source": "tokyo_stories_freq #148 捨てる"
+  },
+  {
+    "id": "shop-close",
+    "date": "2026-10-28",
+    "ja": "店が閉まった。",
+    "en": "Shop (subject) closed.",
+    "before": "img/shop-close/before.webp",
+    "after": "img/shop-close/after.webp",
+    "audio": "img/shop-close/ja.mp3",
+    "source": "tokyo_stories_freq #93 店"
+  },
+  {
+    "id": "phone-crack",
+    "date": "2026-10-27",
+    "ja": "スマホの画面が割れた。",
+    "en": "Smartphone's screen (subject) cracked.",
+    "before": "img/phone-crack/before.webp",
+    "after": "img/phone-crack/after.webp",
+    "audio": "img/phone-crack/ja.mp3",
+    "source": "https://www.cnbc.com/technology/"
+  },
+  {
+    "id": "raise-hand",
+    "date": "2026-10-27",
+    "ja": "男が手を上げた。",
+    "en": "Man (subject) hand (object) raised.",
+    "before": "img/raise-hand/before.webp",
+    "after": "img/raise-hand/after.webp",
+    "audio": "img/raise-hand/ja.mp3",
+    "source": "https://apnews.com/live/trump-midterm-elections-news-updates-10-26-2026"
+  },
+  {
+    "id": "clear-desk",
+    "date": "2026-10-27",
+    "ja": "男が机を片付けた。",
+    "en": "Man (subject) desk (object) cleared-away.",
+    "before": "img/clear-desk/before.webp",
+    "after": "img/clear-desk/after.webp",
+    "audio": "img/clear-desk/ja.mp3",
+    "source": "https://frontscoop.com/2026/10/26/"
+  },
+  {
+    "id": "pc-power-off",
+    "date": "2026-10-26",
+    "ja": "パソコンの電源を切ってください。",
+    "en": "Computer's power (object) cut please.",
+    "before": "img/pc-power-off/before.webp",
+    "after": "img/pc-power-off/after.webp",
+    "audio": "img/pc-power-off/ja.mp3",
+    "source": "https://yuphora.com/news/tech-news-roundup-2026-10-25"
+  },
+  {
+    "id": "open-bag",
+    "date": "2026-10-26",
+    "ja": "かばんを開けてください。",
+    "en": "Bag (object) open please.",
+    "before": "img/open-bag/before.webp",
+    "after": "img/open-bag/after.webp",
+    "audio": "img/open-bag/ja.mp3",
+    "source": "https://www.pbs.org/newshour/politics/trump-escalates-rhetoric-against-el-sayed-as-he-tries-to-undermine-democrat-in-michigan-senate-race"
+  },
+  {
+    "id": "fly-drone",
+    "date": "2026-10-26",
+    "ja": "ドローンを飛ばしてください。",
+    "en": "Drone (object) make-fly please.",
+    "before": "img/fly-drone/before.webp",
+    "after": "img/fly-drone/after.webp",
+    "audio": "img/fly-drone/ja.mp3",
+    "source": "https://applycoding.com/news/2026-10-25"
+  },
+  {
+    "id": "hard-hat",
+    "date": "2026-10-25",
+    "ja": "ヘルメットをかぶってください。",
+    "en": "Helmet (object) put-on-head please.",
+    "before": "img/hard-hat/before.webp",
+    "after": "img/hard-hat/after.webp",
+    "audio": "img/hard-hat/ja.mp3",
+    "source": "https://www.audi.com/en/press-releases/audi-to-establish-first-us-production-site-in-georgia-investing-4-billion-and-creating-4500-jobs-18420"
+  },
+  {
+    "id": "lan-cable",
+    "date": "2026-10-25",
+    "ja": "ケーブルを抜いてください。",
+    "en": "Cable (object) pull-out please.",
+    "before": "img/lan-cable/before.webp",
+    "after": "img/lan-cable/after.webp",
+    "audio": "img/lan-cable/ja.mp3",
+    "source": "https://toolsift.ai/news/2026-10-24/"
+  },
+  {
+    "id": "petrol-nozzle",
+    "date": "2026-10-25",
+    "ja": "ガソリンを入れてください。",
+    "en": "Petrol (object) put-in please.",
+    "before": "img/petrol-nozzle/before.webp",
+    "after": "img/petrol-nozzle/after.webp",
+    "audio": "img/petrol-nozzle/ja.mp3",
+    "source": "https://www.ajc.com/politics/2026/10/trump-republican-georgia-rally/"
+  },
+  {
+    "id": "robotaxi-lights",
+    "date": "2026-10-24",
+    "ja": "ライトをつけてください。",
+    "en": "Light (object) turn-on please.",
+    "before": "img/robotaxi-lights/before.webp",
+    "after": "img/robotaxi-lights/after.webp",
+    "audio": "img/robotaxi-lights/ja.mp3",
+    "source": "https://bbn.live/tech/archive/2026-10-24"
+  },
+  {
+    "id": "ballot-box",
+    "date": "2026-10-24",
+    "ja": "投票用紙を箱に入れてください。",
+    "en": "Ballot (object) into-box put please.",
+    "before": "img/ballot-box/before.webp",
+    "after": "img/ballot-box/after.webp",
+    "audio": "img/ballot-box/ja.mp3",
+    "source": "https://www.cnbc.com/2026/10/24/trump-ai-data-centers-voter-backlash-midterms.html"
+  },
+  {
+    "id": "starlink-dish",
+    "date": "2026-10-24",
+    "ja": "アンテナを立ててください。",
+    "en": "Antenna (object) stand-up please.",
+    "before": "img/starlink-dish/before.webp",
+    "after": "img/starlink-dish/after.webp",
+    "audio": "img/starlink-dish/ja.mp3",
+    "source": "https://www.npr.org/2026/10/24/nx-s1-6015482/ukraine-starlink-working-after-disruptions"
+  },
+  {
+    "id": "red-button",
+    "date": "2026-10-24",
+    "ja": "赤いボタンを押してください。",
+    "en": "Red button (object) press please.",
+    "before": "img/red-button/before.webp",
+    "after": "img/red-button/after.webp",
+    "audio": "img/red-button/ja.mp3"
+  }
 ]
