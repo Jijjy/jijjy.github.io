@@ -1,5 +1,35 @@
 [
   {
+    "id": "fold-futon",
+    "date": "2026-11-06",
+    "ja": "女が布団を畳んだ。",
+    "en": "The woman the futon folded.",
+    "before": "img/fold-futon/before.webp",
+    "after": "img/fold-futon/after.webp",
+    "audio": "img/fold-futon/ja.mp3",
+    "source": "tokyo_stories_freq #751 畳む"
+  },
+  {
+    "id": "wash-dishes",
+    "date": "2026-11-06",
+    "ja": "女が皿を洗った。",
+    "en": "The woman the dishes washed.",
+    "before": "img/wash-dishes/before.webp",
+    "after": "img/wash-dishes/after.webp",
+    "audio": "img/wash-dishes/ja.mp3",
+    "source": "tokyo_stories_freq #739 洗う"
+  },
+  {
+    "id": "grill-meat",
+    "date": "2026-11-06",
+    "ja": "男が肉を焼いた。",
+    "en": "The man the meat grilled.",
+    "before": "img/grill-meat/before.webp",
+    "after": "img/grill-meat/after.webp",
+    "audio": "img/grill-meat/ja.mp3",
+    "source": "tokyo_stories_freq #501 焼く"
+  },
+  {
     "id": "eat-noodles",
     "date": "2026-11-05",
     "ja": "男が麺を食べた。",
