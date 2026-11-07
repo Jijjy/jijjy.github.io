@@ -1,5 +1,35 @@
 [
   {
+    "id": "man-gain-weight",
+    "date": "2026-11-07",
+    "ja": "男が太った。",
+    "en": "The man fat-became.",
+    "before": "img/man-gain-weight/before.webp",
+    "after": "img/man-gain-weight/after.webp",
+    "audio": "img/man-gain-weight/ja.mp3",
+    "source": "tokyo_stories_freq #452 太る"
+  },
+  {
+    "id": "woman-laugh",
+    "date": "2026-11-07",
+    "ja": "女が笑った。",
+    "en": "The woman laughed.",
+    "before": "img/woman-laugh/before.webp",
+    "after": "img/woman-laugh/after.webp",
+    "audio": "img/woman-laugh/ja.mp3",
+    "source": "tokyo_stories_freq #521 笑う"
+  },
+  {
+    "id": "cut-vegetables",
+    "date": "2026-11-07",
+    "ja": "女が野菜を切った。",
+    "en": "The woman the vegetables cut.",
+    "before": "img/cut-vegetables/before.webp",
+    "after": "img/cut-vegetables/after.webp",
+    "audio": "img/cut-vegetables/ja.mp3",
+    "source": "tokyo_stories_freq #544 野菜"
+  },
+  {
     "id": "fold-futon",
     "date": "2026-11-06",
     "ja": "女が布団を畳んだ。",
