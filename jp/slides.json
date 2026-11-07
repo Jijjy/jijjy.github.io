@@ -1,5 +1,38 @@
 [
   {
+    "id": "man-lose-weight",
+    "date": "2026-11-07",
+    "ja": "男が痩せた。",
+    "en": "The man thin-became.",
+    "before": "img/man-lose-weight/before.webp",
+    "after": "img/man-lose-weight/after.webp",
+    "audio": "img/man-lose-weight/ja.mp3",
+    "source": "tokyo_stories_freq #452 太る (companion)",
+    "group": "man-gain-weight"
+  },
+  {
+    "id": "woman-cry",
+    "date": "2026-11-07",
+    "ja": "女が泣いた。",
+    "en": "The woman cried.",
+    "before": "img/woman-cry/before.webp",
+    "after": "img/woman-cry/after.webp",
+    "audio": "img/woman-cry/ja.mp3",
+    "source": "tokyo_stories_freq #521 笑う (companion)",
+    "group": "woman-laugh"
+  },
+  {
+    "id": "wash-vegetables",
+    "date": "2026-11-07",
+    "ja": "女が野菜を洗った。",
+    "en": "The woman the vegetables washed.",
+    "before": "img/wash-vegetables/before.webp",
+    "after": "img/wash-vegetables/after.webp",
+    "audio": "img/wash-vegetables/ja.mp3",
+    "source": "tokyo_stories_freq #544 野菜 (companion)",
+    "group": "cut-vegetables"
+  },
+  {
     "id": "man-gain-weight",
     "date": "2026-11-07",
     "ja": "男が太った。",
@@ -7,7 +40,8 @@
     "before": "img/man-gain-weight/before.webp",
     "after": "img/man-gain-weight/after.webp",
     "audio": "img/man-gain-weight/ja.mp3",
-    "source": "tokyo_stories_freq #452 太る"
+    "source": "tokyo_stories_freq #452 太る",
+    "group": "man-gain-weight"
   },
   {
     "id": "woman-laugh",
@@ -17,7 +51,8 @@
     "before": "img/woman-laugh/before.webp",
     "after": "img/woman-laugh/after.webp",
     "audio": "img/woman-laugh/ja.mp3",
-    "source": "tokyo_stories_freq #521 笑う"
+    "source": "tokyo_stories_freq #521 笑う",
+    "group": "woman-laugh"
   },
   {
     "id": "cut-vegetables",
@@ -27,7 +62,8 @@
     "before": "img/cut-vegetables/before.webp",
     "after": "img/cut-vegetables/after.webp",
     "audio": "img/cut-vegetables/ja.mp3",
-    "source": "tokyo_stories_freq #544 野菜"
+    "source": "tokyo_stories_freq #544 野菜",
+    "group": "cut-vegetables"
   },
   {
     "id": "fold-futon",
