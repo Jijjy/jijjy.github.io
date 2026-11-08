@@ -1,5 +1,71 @@
 [
   {
+    "id": "look-ground",
+    "date": "2026-11-08",
+    "ja": "男が地面を見た。",
+    "en": "The man the ground looked-at.",
+    "before": "img/look-ground/before.webp",
+    "after": "img/look-ground/after.webp",
+    "audio": "img/look-ground/ja.mp3",
+    "source": "tokyo_stories_freq #30 見る (companion)",
+    "group": "look-sky"
+  },
+  {
+    "id": "exit-room",
+    "date": "2026-11-08",
+    "ja": "女が部屋を出た。",
+    "en": "The woman the room exited.",
+    "before": "img/exit-room/before.webp",
+    "after": "img/exit-room/after.webp",
+    "audio": "img/exit-room/ja.mp3",
+    "source": "tokyo_stories_freq #60 入る (companion)",
+    "group": "enter-room"
+  },
+  {
+    "id": "hide-face",
+    "date": "2026-11-08",
+    "ja": "女が顔を隠した。",
+    "en": "The woman the face hid.",
+    "before": "img/hide-face/before.webp",
+    "after": "img/hide-face/after.webp",
+    "audio": "img/hide-face/ja.mp3",
+    "source": "tokyo_stories_freq #154 顔 (companion)",
+    "group": "wash-face"
+  },
+  {
+    "id": "look-sky",
+    "date": "2026-11-08",
+    "ja": "男が空を見た。",
+    "en": "The man the sky looked-at.",
+    "before": "img/look-sky/before.webp",
+    "after": "img/look-sky/after.webp",
+    "audio": "img/look-sky/ja.mp3",
+    "source": "tokyo_stories_freq #30 見る",
+    "group": "look-sky"
+  },
+  {
+    "id": "enter-room",
+    "date": "2026-11-08",
+    "ja": "女が部屋に入った。",
+    "en": "The woman into the room entered.",
+    "before": "img/enter-room/before.webp",
+    "after": "img/enter-room/after.webp",
+    "audio": "img/enter-room/ja.mp3",
+    "source": "tokyo_stories_freq #60 入る",
+    "group": "enter-room"
+  },
+  {
+    "id": "wash-face",
+    "date": "2026-11-08",
+    "ja": "女が顔を洗った。",
+    "en": "The woman the face washed.",
+    "before": "img/wash-face/before.webp",
+    "after": "img/wash-face/after.webp",
+    "audio": "img/wash-face/ja.mp3",
+    "source": "tokyo_stories_freq #154 顔",
+    "group": "wash-face"
+  },
+  {
     "id": "man-lose-weight",
     "date": "2026-11-07",
     "ja": "男が痩せた。",
