@@ -1,5 +1,71 @@
 [
   {
+    "id": "pour-water",
+    "date": "2026-11-09",
+    "ja": "女がグラスに水を注いだ。",
+    "en": "The woman the glass into water poured.",
+    "before": "img/pour-water/before.webp",
+    "after": "img/pour-water/after.webp",
+    "audio": "img/pour-water/ja.mp3",
+    "source": "tokyo_stories_freq #357 水",
+    "group": "pour-water"
+  },
+  {
+    "id": "spill-water",
+    "date": "2026-11-09",
+    "ja": "女が水をこぼした。",
+    "en": "The woman the water spilled.",
+    "before": "img/spill-water/before.webp",
+    "after": "img/spill-water/after.webp",
+    "audio": "img/spill-water/ja.mp3",
+    "source": "tokyo_stories_freq #357 水 (companion)",
+    "group": "pour-water"
+  },
+  {
+    "id": "take-apple",
+    "date": "2026-11-09",
+    "ja": "男が手でりんごを取った。",
+    "en": "The man hand with the apple took.",
+    "before": "img/take-apple/before.webp",
+    "after": "img/take-apple/after.webp",
+    "audio": "img/take-apple/ja.mp3",
+    "source": "tokyo_stories_freq #176 手",
+    "group": "take-apple"
+  },
+  {
+    "id": "wave-hand",
+    "date": "2026-11-09",
+    "ja": "男が手を振った。",
+    "en": "The man the hand waved.",
+    "before": "img/wave-hand/before.webp",
+    "after": "img/wave-hand/after.webp",
+    "audio": "img/wave-hand/ja.mp3",
+    "source": "tokyo_stories_freq #176 手 (companion)",
+    "group": "take-apple"
+  },
+  {
+    "id": "close-eyes",
+    "date": "2026-11-09",
+    "ja": "女が目を閉じた。",
+    "en": "The woman the eyes closed.",
+    "before": "img/close-eyes/before.webp",
+    "after": "img/close-eyes/after.webp",
+    "audio": "img/close-eyes/ja.mp3",
+    "source": "tokyo_stories_freq #366 目",
+    "group": "close-eyes"
+  },
+  {
+    "id": "rub-eyes",
+    "date": "2026-11-09",
+    "ja": "女が目をこすった。",
+    "en": "The woman the eyes rubbed.",
+    "before": "img/rub-eyes/before.webp",
+    "after": "img/rub-eyes/after.webp",
+    "audio": "img/rub-eyes/ja.mp3",
+    "source": "tokyo_stories_freq #366 目 (companion)",
+    "group": "close-eyes"
+  },
+  {
     "id": "look-ground",
     "date": "2026-11-08",
     "ja": "男が地面を見た。",
