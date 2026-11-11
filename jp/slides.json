@@ -1,5 +1,71 @@
 [
  {
+  "id": "take-plate",
+  "date": "2026-11-11",
+  "ja": "男が皿を取った。",
+  "en": "The man the plate took.",
+  "before": "img/take-plate/before.webp",
+  "after": "img/take-plate/after.webp",
+  "audio": "img/take-plate/ja.mp3",
+  "source": "tokyo_stories_freq #190 取る",
+  "group": "take-plate"
+ },
+ {
+  "id": "break-plate",
+  "date": "2026-11-11",
+  "ja": "男が皿を割った。",
+  "en": "The man the plate broke.",
+  "before": "img/break-plate/before.webp",
+  "after": "img/break-plate/after.webp",
+  "audio": "img/break-plate/ja.mp3",
+  "source": "tokyo_stories_freq #190 取る (companion)",
+  "group": "take-plate"
+ },
+ {
+  "id": "dunk-cookie",
+  "date": "2026-11-11",
+  "ja": "女がクッキーを牛乳に浸けた。",
+  "en": "The woman the cookie the milk into dunked.",
+  "before": "img/dunk-cookie/before.webp",
+  "after": "img/dunk-cookie/after.webp",
+  "audio": "img/dunk-cookie/ja.mp3",
+  "source": "tokyo_stories_freq #359 浸ける",
+  "group": "dunk-cookie"
+ },
+ {
+  "id": "eat-cookie",
+  "date": "2026-11-11",
+  "ja": "女がクッキーを食べた。",
+  "en": "The woman the cookie ate.",
+  "before": "img/eat-cookie/before.webp",
+  "after": "img/eat-cookie/after.webp",
+  "audio": "img/eat-cookie/ja.mp3",
+  "source": "tokyo_stories_freq #359 浸ける (companion)",
+  "group": "dunk-cookie"
+ },
+ {
+  "id": "hit-ball",
+  "date": "2026-11-11",
+  "ja": "男の子がボールを打った。",
+  "en": "The boy the ball hit.",
+  "before": "img/hit-ball/before.webp",
+  "after": "img/hit-ball/after.webp",
+  "audio": "img/hit-ball/ja.mp3",
+  "source": "tokyo_stories_freq #348 打つ",
+  "group": "hit-ball"
+ },
+ {
+  "id": "drop-bat",
+  "date": "2026-11-11",
+  "ja": "男の子がバットを落とした。",
+  "en": "The boy the bat dropped.",
+  "before": "img/drop-bat/before.webp",
+  "after": "img/drop-bat/after.webp",
+  "audio": "img/drop-bat/ja.mp3",
+  "source": "tokyo_stories_freq #348 打つ (companion)",
+  "group": "hit-ball"
+ },
+ {
   "id": "open-mouth",
   "date": "2026-11-10",
   "ja": "男が口を開けた。",
